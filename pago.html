@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Acceso al Método McB</title>
+  <meta name="description" content="Acceso privado al Método McB por Bizum." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+  <style>
+    .pay-page{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:48px 20px;
+    }
+    .pay-card{
+      max-width:620px;
+      width:min(620px, 100%);
+      text-align:center;
+      padding:34px 28px;
+    }
+    .pay-logo{
+      width:140px;
+      max-width:40vw;
+      margin-bottom:18px;
+      opacity:.95;
+      filter: drop-shadow(0 6px 14px rgba(0,0,0,.08));
+    }
+    .pay-kicker{
+      font-size:12px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:10px;
+    }
+    .pay-card h1{
+      font-family:"Lora", serif;
+      font-size: clamp(30px, 5vw, 46px);
+      line-height:1.12;
+      margin:0 0 14px;
+    }
+    .pay-intro{
+      color:var(--muted);
+      line-height:1.75;
+      max-width:38ch;
+      margin:0 auto;
+    }
+    .pay-price{
+      font-family:"Lora", serif;
+      font-size:44px;
+      margin:24px 0 8px;
+      color:var(--text);
+    }
+    .pay-sub{
+      color:var(--muted);
+      font-size:14px;
+      margin-bottom:18px;
+    }
+    .bizum-box{
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:22px 20px;
+      margin:22px 0 16px;
+      background:linear-gradient(180deg, rgba(255,255,255,1), rgba(255,255,255,.82));
+      box-shadow: var(--shadow);
+    }
+    .bizum-title{
+      font-family:"Lora", serif;
+      font-size:24px;
+      margin-bottom:6px;
+    }
+    .bizum-number{
+      font-size:28px;
+      font-weight:700;
+      letter-spacing:.03em;
+      margin:12px 0;
+    }
+    .bizum-concept{
+      margin-top:14px;
+      color:var(--muted);
+      line-height:1.7;
+    }
+    .pay-note{
+      color:var(--muted);
+      line-height:1.75;
+      margin:0 auto;
+      max-width:42ch;
+    }
+    .pay-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:center;
+      margin-top:24px;
+    }
+    .pay-mini{
+      margin-top:16px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.6;
+    }
+  </style>
+
+  <link rel="manifest" href="/mcB-volviendo-a-ti/manifest.json">
+  <meta name="theme-color" content="#c9b3a6">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Método McB">
+  <link rel="apple-touch-icon" href="/mcB-volviendo-a-ti/icon-192.png">
+</head>
+<body>
+  <main class="pay-page">
+    <section class="card pay-card">
+      <img src="./logotipo3d.png" class="pay-logo" alt="Método McB">
+      <div class="pay-kicker">Acceso privado</div>
+      <h1>Acceso al Método McB</h1>
+      <p class="pay-intro">
+        Un recorrido íntimo y guiado para transformar la forma en que te cuidas, te miras y te eliges, paso a paso.
+      </p>
+
+      <div style="margin-bottom:6px; font-size:14px; color:#8a8a8a;">
+        <span style="text-decoration: line-through;">49€</span>
+      </div>
+      <div class="pay-price">29€</div>
+      <div class="pay-sub">Precio especial de lanzamiento · Pago único</div>
+
+      <div class="bizum-box">
+        <div class="bizum-title">Paga por Bizum</div>
+        <div class="pay-sub">Envía tu pago a este número</div>
+        <div class="bizum-number">676 370 646</div>
+        <div class="bizum-concept">
+          Concepto: <strong>McB + nombre + apellidos + teléfono</strong><br>Ejemplo: McB Ana García López 612345678
+        </div>
+      </div>
+
+      <div class="bizum-box" style="margin-top:16px;">
+        <div class="bizum-title">Qué incluye tu acceso</div>
+        <div class="bizum-concept">
+          ✔ temario completo<br>
+          ✔ ritual de 21 días<br>
+          ✔ certificado final
+        </div>
+      </div>
+
+      <p class="pay-note">
+        En cuanto reciba tu Bizum, te enviaré personalmente tu clave de acceso para que puedas entrar a tu espacio privado. Así podré darte también la bienvenida y acompañarte desde el inicio.
+      </p>
+
+      <div class="pay-actions">
+        <a class="btn primary" href="./app.html">Ya tengo mi clave de acceso</a>
+        <a class="btn" href="./index.html">Volver a la portada</a>
+      </div>
+
+      <div class="pay-mini">
+        Si tienes cualquier duda con el acceso, escríbeme y te ayudo personalmente.
+      </div>
+    </section>
+  </main>
+
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("/mcB-volviendo-a-ti/sw.js", { scope: "/mcB-volviendo-a-ti/" })
+        .catch((err) => console.error("SW error:", err));
+    });
+  }
+</script>
+</body>
+</html>

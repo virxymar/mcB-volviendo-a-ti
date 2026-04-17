@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Método McB · Mindfulness del Cuidado</title>
+  <meta name="description" content="Vuelve a ti a través del cuidado consciente. Un recorrido íntimo y guiado con temario, ritual de 21 días y certificado final." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+  <style>
+    html { scroll-behavior: smooth; }
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at 15% 10%, rgba(201,179,166,.22), transparent 60%),
+        radial-gradient(1000px 500px at 85% 15%, rgba(151,165,154,.20), transparent 60%),
+        var(--bg);
+    }
+    main{ display:block; }
+    .hero{
+      padding: 54px 0 34px;
+    }
+    .hero-grid{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 24px;
+      align-items:center;
+    }
+    .eyebrow{
+      font-size:12px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:10px;
+    }
+    .hero-copy h1{
+      font-family:"Lora", serif;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height:1.08;
+      margin:0 0 14px;
+    }
+    .hero-text{
+      font-size:18px;
+      line-height:1.7;
+      color:var(--muted);
+      max-width: 34ch;
+    }
+    .hero-pills{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin:18px 0;
+    }
+    .hero-card{
+      padding: 26px;
+    }
+    .hero-card .mini-kicker{
+      font-size:12px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:10px;
+    }
+    .hero-card p{
+      margin:0;
+      color: var(--muted);
+      line-height:1.8;
+      font-size:16px;
+    }
+    .hero-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 12px;
+    }
+    .narrow{
+      width:min(780px, 92vw);
+      margin:0 auto;
+    }
+    .section{
+      padding: 72px 0;
+    }
+    .section.soft{
+      background: rgba(255,255,255,.42);
+      border-top: 1px solid rgba(0,0,0,.04);
+      border-bottom: 1px solid rgba(0,0,0,.04);
+    }
+    .section-title,
+    .narrow h2,
+    .center h2{
+      font-family:"Lora", serif;
+      font-size: clamp(28px, 4vw, 40px);
+      line-height: 1.15;
+      margin:0 0 22px;
+    }
+    .narrow p,
+    .feature-card p,
+    .list-card,
+    .card p,
+    .faq-item p{
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 16px;
+    }
+    .cards-2,
+    .cards-3,
+    .cards-4,
+    .steps,
+    .faq-list{
+      display:grid;
+      gap:16px;
+    }
+    .cards-2{ grid-template-columns: repeat(2, 1fr); }
+    .cards-3{ grid-template-columns: repeat(3, 1fr); }
+    .cards-4{ grid-template-columns: repeat(4, 1fr); }
+    .steps{ grid-template-columns: repeat(4, 1fr); }
+    .feature-card,
+    .small-card,
+    .step-card,
+    .faq-item,
+    .list-card,
+    .price-box{
+      padding: 20px;
+    }
+    .feature-card h3,
+    .small-card h3,
+    .step-card h3,
+    .faq-item h3,
+    .cards-2 .card h3{
+      margin:0 0 8px;
+      font-family:"Lora", serif;
+      font-size: 22px;
+    }
+    .clean-list{
+      margin:0;
+      padding-left:20px;
+      line-height:1.95;
+      color: var(--muted);
+      font-size: 16px;
+    }
+    .signature-block{
+      margin-top:24px;
+      padding-top:16px;
+      border-top:1px solid var(--border);
+      color:var(--muted);
+      line-height:1.8;
+    }
+    .signature-block strong{ color: var(--text); }
+    .step-number{
+      font-size:12px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:10px;
+    }
+    .center{ text-align:center; }
+    .center-actions{ justify-content:center; }
+    .cta-section{ padding-top: 84px; }
+    .price-box{
+      margin: 24px auto 0;
+      max-width: 320px;
+      text-align:center;
+    }
+    .price-label{
+      font-size:12px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+    .price{
+      font-family:"Lora", serif;
+      font-size:42px;
+      margin:10px 0 4px;
+      color: var(--text);
+    }
+    .price-note{
+      font-size:14px;
+      color:var(--muted);
+    }
+    .closing-line{
+      font-family:"Lora", serif;
+      font-size:22px;
+      color: var(--text) !important;
+    }
+    .footer-inner{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    @media (max-width: 980px){
+      .hero-grid,
+      .cards-2,
+      .cards-3,
+      .cards-4,
+      .steps{
+        grid-template-columns: 1fr;
+      }
+      .hero{
+        padding: 34px 0 22px;
+      }
+      .hero-copy h1{
+        font-size: clamp(32px, 9vw, 44px);
+      }
+      .header-inner,
+      .nav{
+        align-items:flex-start;
+      }
+    }
+  </style>
+
+  <link rel="manifest" href="/mcB-volviendo-a-ti/manifest.json">
+  <meta name="theme-color" content="#c9b3a6">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Método McB">
+  <link rel="apple-touch-icon" href="/mcB-volviendo-a-ti/icon-192.png">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="kicker">Método McB</div>
+        <div class="title">Mindfulness del Cuidado</div>
+      </div>
+      <nav class="nav">
+        <a class="btn ghost" href="#incluye">Qué incluye</a>
+        <a class="btn ghost" href="#faq">Preguntas</a>
+        <a class="btn primary" href="./pago.html">Acceder</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <img src="./logotipo3d.png" class="hero-logo" alt="Método McB">
+          <div class="eyebrow">Experiencia premium de autocuidado consciente</div>
+          <h1>Vuelve a ti a través del cuidado consciente</h1>
+          <p class="hero-text">
+            Un recorrido íntimo y guiado para transformar tu forma de cuidarte,
+            mirarte y elegirte, paso a paso.
+          </p>
+
+          <div class="hero-pills">
+            <span class="pill">Temario</span>
+            <span class="pill">Ritual de 21 días</span>
+            <span class="pill">Certificado final</span>
+          </div>
+
+          <div class="hero-actions">
+            <a class="btn primary" href="./pago.html">Quiero acceder al Método McB</a>
+            <a class="btn" href="#como-funciona">Ver cómo funciona</a>
+          </div>
+        </div>
+
+        <div class="hero-card card">
+          <div class="mini-kicker">Un espacio creado para recorrer con calma</div>
+          <p>
+            No es un curso para hacer deprisa. Es una experiencia para comprender,
+            practicar e integrar una forma más consciente de cuidarte.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container narrow">
+        <h2>Hay momentos en los que una se cuida, pero no se está sosteniendo de verdad</h2>
+        <p>
+          Hace rutinas. Intenta estar mejor. Busca verse bien, sentirse bien, recomponerse.
+          Y aun así, algo dentro sigue pidiendo otra cosa.
+        </p>
+        <p>Más pausa. Más presencia. Más verdad.</p>
+        <p>
+          El <strong>Método McB</strong> nace para acompañarte a volver a ti desde el cuidado consciente.
+          No desde la exigencia. No desde la prisa. No desde la idea de hacerlo todo perfecto.
+          Sino desde una forma más amable, más profunda y más real de sostenerte.
+        </p>
+      </div>
+    </section>
+
+    <section class="section soft">
+      <div class="container narrow">
+        <h2>Qué es el Método McB</h2>
+        <p>
+          El <strong>Método McB</strong> es una experiencia de aprendizaje y práctica que une
+          belleza consciente, atención plena y autocuidado real.
+        </p>
+        <p>
+          Ha sido creado para ayudarte a integrar el cuidado como un gesto de presencia,
+          no solo como una rutina externa.
+        </p>
+        <p>
+          Aquí no vienes solo a aprender conceptos. Vienes a recorrer un proceso.
+          A comprender. A observarte. A practicar. A volver a ti.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" id="incluye">
+      <div class="container">
+        <h2 class="section-title">Qué incluye este recorrido</h2>
+        <div class="cards-3">
+          <article class="card feature-card">
+            <h3>Bienvenida guiada</h3>
+            <p>Una entrada cuidada para comenzar con claridad y sentido.</p>
+          </article>
+          <article class="card feature-card">
+            <h3>Temario de 6 lecciones</h3>
+            <p>Una base clara para comprender el método y su aplicación real.</p>
+          </article>
+          <article class="card feature-card">
+            <h3>Ejercicios prácticos</h3>
+            <p>Para integrar lo aprendido y llevarlo a tu propia experiencia.</p>
+          </article>
+          <article class="card feature-card">
+            <h3>Ritual de 21 días</h3>
+            <p>Un día, un gesto, una forma sostenible de volver a ti.</p>
+          </article>
+          <article class="card feature-card">
+            <h3>Panel de progreso</h3>
+            <p>Un espacio claro para acompañar tu recorrido dentro del método.</p>
+          </article>
+          <article class="card feature-card">
+            <h3>Certificado final</h3>
+            <p>Se desbloquea al completar el temario y el ritual.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft">
+      <div class="container">
+        <h2 class="section-title">Este espacio es para ti si...</h2>
+        <div class="list-card card">
+          <ul class="clean-list">
+            <li>sientes que necesitas volver a ti de una forma más consciente</li>
+            <li>quieres cuidarte con más intención y menos exigencia</li>
+            <li>buscas algo más profundo que una rutina rápida</li>
+            <li>te cuesta sostener hábitos cuando todo se acelera</li>
+            <li>quieres unir bienestar, presencia y autocuidado en un mismo espacio</li>
+            <li>valoras la calma, la belleza y los procesos con sentido</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2 class="section-title">Lo que vas a encontrar dentro</h2>
+        <div class="cards-2">
+          <article class="card feature-card">
+            <h3>1. Temario</h3>
+            <p>
+              Un recorrido claro y sereno para comprender la base del método.
+              Aprenderás sobre mindfulness del cuidado, prácticas de presencia,
+              integración en la vida cotidiana y aplicación real.
+            </p>
+          </article>
+          <article class="card feature-card">
+            <h3>2. Práctica</h3>
+            <p>
+              No se queda en teoría. El método incluye ejercicios para ayudarte
+              a llevar lo aprendido a tu propia experiencia.
+            </p>
+          </article>
+          <article class="card feature-card">
+            <h3>3. Ritual de 21 días</h3>
+            <p>
+              Aquí es donde el conocimiento empieza a transformarse en hábito.
+              Un día, un gesto. Una práctica diaria para acompañarte a volver a ti.
+            </p>
+          </article>
+          <article class="card feature-card">
+            <h3>4. Cierre final</h3>
+            <p>
+              Al completar el recorrido podrás descargar tu certificado como símbolo
+              de todo lo que has sostenido en este proceso.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft">
+      <div class="container">
+        <h2 class="section-title">Lo que te llevas de este método</h2>
+        <div class="cards-4">
+          <article class="card small-card">
+            <h3>Comprensión</h3>
+            <p>Entenderás una forma más consciente de cuidarte y relacionarte contigo.</p>
+          </article>
+          <article class="card small-card">
+            <h3>Presencia</h3>
+            <p>Aprenderás a hacer pausa y a observarte con más claridad.</p>
+          </article>
+          <article class="card small-card">
+            <h3>Integración</h3>
+            <p>Tendrás una guía para convertir el cuidado en algo sostenible y real.</p>
+          </article>
+          <article class="card small-card">
+            <h3>Transformación</h3>
+            <p>No para convertirte en otra persona, sino para volver a ti con más respeto.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container narrow">
+        <h2>Una forma distinta de cuidarte</h2>
+        <p>El Método McB no está pensado para hacerse deprisa.</p>
+        <p>
+          No es un contenido para consumir corriendo ni una lista de pasos vacíos.
+          Es un espacio para recorrer con calma.
+        </p>
+        <p>Para leer, sentir, practicar y sostener.</p>
+        <p>
+          Porque a veces lo que una necesita no es hacer más.
+          Es aprender a estar de otra manera consigo misma.
+        </p>
+      </div>
+    </section>
+
+    <section class="section soft">
+      <div class="container narrow">
+        <h2>Un espacio creado por Blancanieves</h2>
+        <p>
+          He creado este método desde una forma de entender el cuidado que va más allá de lo externo.
+        </p>
+        <p>
+          Para mí, cuidarse no es solo aplicar productos o seguir una rutina.
+          Es aprender a habitarse con más presencia, más suavidad y más verdad.
+        </p>
+        <p>
+          Este espacio nace con esa intención: acompañarte a volver a ti
+          desde un cuidado más consciente, más profundo y más tuyo.
+        </p>
+        <div class="signature-block">
+          <strong>Blancanieves Rodríguez Torbado</strong><br>
+          <span>Fundadora del Método McB</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="como-funciona">
+      <div class="container">
+        <h2 class="section-title">Cómo funciona</h2>
+        <div class="steps">
+          <article class="card step-card">
+            <div class="step-number">01</div>
+            <h3>Accedes a tu espacio</h3>
+            <p>Entras en tu plataforma y comienzas el recorrido.</p>
+          </article>
+          <article class="card step-card">
+            <div class="step-number">02</div>
+            <h3>Recibes la bienvenida</h3>
+            <p>Empiezas con una entrada guiada para situarte dentro del método.</p>
+          </article>
+          <article class="card step-card">
+            <div class="step-number">03</div>
+            <h3>Avanzas a tu ritmo</h3>
+            <p>Recorres el temario y el ritual con calma, siguiendo tu propio proceso.</p>
+          </article>
+          <article class="card step-card">
+            <div class="step-number">04</div>
+            <h3>Cierras el recorrido</h3>
+            <p>Al completar todo, desbloqueas tu certificado final.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section cta-section">
+      <div class="container narrow center">
+        <div class="eyebrow">Acceso al Método McB</div>
+        <h2>Empieza tu recorrido</h2>
+        <p>Pago único · acceso al recorrido completo</p>
+
+        <div class="price-box card">
+          <div class="launch-badge">Precio de lanzamiento</div>
+          <div class="price-label">Inversión</div>
+          <div style="margin-bottom:6px; font-size:14px; color:#8a8a8a;">
+            <span style="text-decoration: line-through;">49€</span>
+          </div>
+          <div class="price">29€</div>
+
+          <div class="price-features">
+            <div>✔ acceso al método completo</div>
+            <div>✔ ritual de 21 días</div>
+            <div>✔ certificado final</div>
+          </div>
+
+          <div class="price-note">Precio especial de lanzamiento</div>
+          <div style="margin-top:10px; font-size:13px; color:#8a8a8a;">
+            Disponible a este precio para las primeras alumnas
+          </div>
+        </div>
+
+        <p class="launch-note">Precio especial de lanzamiento disponible por tiempo limitado</p>
+
+        <p style="margin-top:14px; font-size:14px; color:#6b6b6b;">
+          No es un curso más. Es un espacio para volver a ti.
+        </p>
+
+        <div class="hero-actions center-actions">
+          <a class="btn primary" href="./pago.html">Quiero entrar ahora</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft" id="faq">
+      <div class="container narrow">
+        <h2>Preguntas frecuentes</h2>
+        <div class="faq-list">
+          <article class="card faq-item">
+            <h3>¿Necesito experiencia previa?</h3>
+            <p>No. El método está pensado para que puedas recorrerlo de forma sencilla, clara y cercana.</p>
+          </article>
+          <article class="card faq-item">
+            <h3>¿Cuánto tiempo necesito?</h3>
+            <p>Puedes hacerlo a tu ritmo. No está pensado para correr, sino para integrarlo de manera real.</p>
+          </article>
+          <article class="card faq-item">
+            <h3>¿Tendré acceso al ritual desde el principio?</h3>
+            <p>Sí, aunque la experiencia está diseñada para vivirse paso a paso.</p>
+          </article>
+          <article class="card faq-item">
+            <h3>¿El certificado está incluido?</h3>
+            <p>Sí. Se desbloquea cuando completes el temario y el ritual de 21 días.</p>
+          </article>
+          <article class="card faq-item">
+            <h3>¿Es un curso solo de teoría?</h3>
+            <p>No. Incluye contenido, práctica, integración y un recorrido guiado.</p>
+          </article>
+          <article class="card faq-item">
+            <h3>¿Puedo hacerlo si estoy en un momento de cansancio o saturación?</h3>
+            <p>Sí. Está pensado precisamente para acompañarte a volver a ti sin exigencia, desde la calma y la presencia.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section final-cta">
+      <div class="container narrow center">
+        <h2>No necesitas hacerlo perfecto</h2>
+        <p>
+          No necesitas llegar de una manera concreta. No necesitas demostrar nada.
+          Solo empezar.
+        </p>
+        <p class="closing-line">Un gesto. Un día. Una vuelta a ti.</p>
+        <div class="hero-actions center-actions">
+          <a class="btn primary" href="./pago.html">Empezar mi recorrido</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>© Momentos con Blancanieves · Método McB</div>
+      <div>Mindfulness del Cuidado</div>
+    </div>
+  </footer>
+
+  <a class="mobile-cta" href="./pago.html">Acceder al Método McB · 29€</a>
+
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("/mcB-volviendo-a-ti/sw.js", { scope: "/mcB-volviendo-a-ti/" })
+        .catch((err) => console.error("SW error:", err));
+    });
+  }
+</script>
+</body>
+</html>

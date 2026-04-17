@@ -1,0 +1,3396 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mindfulness del Cuidado · Momentos con Blancanieves</title>
+
+  <!-- Fonts (CDN) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Tailwind (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js (CDN, optional use) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Certificate (html2canvas + jsPDF) -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <style>
+    :root{
+      --bg: #fbfaf8;
+      --card: #ffffff;
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --nude: #b58c95;
+      --nude-2:#c9a6ad;
+      --sage: #7e9a8a;
+      --sage-2:#9db3a7;
+      --line: #e7e2de;
+      --shadow: 0 10px 30px rgba(17, 24, 39, 0.06);
+      --focus: 0 0 0 3px rgba(126,154,138,0.35);
+    }
+    .dark{
+      --bg:#0f1416;
+      --card:#151b1d;
+      --ink:#e5e7eb;
+      --muted:#a1a1aa;
+      --line:#273034;
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+    html, body { height: 100%; }
+    body{
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    h1,h2,h3,.serif { font-family: Lora, Georgia, serif; }
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      border-radius: 18px;
+    }
+    .btn{
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      padding: 10px 12px;
+      transition: transform .05s ease, background .2s ease, border-color .2s ease;
+    }
+    .btn:hover{ border-color: rgba(181,140,149,0.45); }
+    .btn:active{ transform: translateY(1px); }
+    .btn-primary{
+      background: linear-gradient(135deg, rgba(181,140,149,0.22), rgba(126,154,138,0.18));
+      border-color: rgba(181,140,149,0.35);
+    }
+    .chip{
+      border: 1px solid var(--line);
+      background: rgba(181,140,149,0.09);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+    .link{
+      color: var(--ink);
+      text-decoration: underline;
+      text-decoration-color: rgba(126,154,138,0.55);
+      text-underline-offset: 3px;
+    }
+    .focus-ring:focus{ outline: none; box-shadow: var(--focus); }
+    .progress-rail{ background: rgba(126,154,138,0.18); }
+    .progress-fill{ background: rgba(126,154,138,0.65); }
+    .path-node{
+      width: 52px; height: 52px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      display:flex; align-items:center; justify-content:center;
+      position: relative;
+    }
+    .path-node[data-status="locked"]{ opacity: .5; }
+    .path-node[data-status="done"]{
+      border-color: rgba(126,154,138,0.55);
+      background: linear-gradient(135deg, rgba(126,154,138,0.18), rgba(181,140,149,0.10));
+    }
+    .path-node[data-status="current"]{
+      border-color: rgba(181,140,149,0.60);
+      background: rgba(181,140,149,0.10);
+    }
+    .path-node:focus{ outline:none; box-shadow: var(--focus); }
+    .choice{
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 12px;
+      background: var(--card);
+      text-align:left;
+      width:100%;
+    }
+    .choice:hover{ border-color: rgba(181,140,149,0.45); }
+    .choice[aria-pressed="true"]{ border-color: rgba(181,140,149,0.70); }
+    .choice.correct{
+      border-color: rgba(126,154,138,0.75);
+      background: rgba(126,154,138,0.14);
+    }
+    .choice.incorrect{
+      border-color: rgba(185, 28, 28, 0.55);
+      background: rgba(185, 28, 28, 0.10);
+    }
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      border: 1px solid var(--line);
+      border-bottom-width: 2px;
+      border-radius: 10px;
+      padding: 2px 8px;
+      background: rgba(255,255,255,0.02);
+    }
+    @media (prefers-reduced-motion: reduce){
+      *{ scroll-behavior:auto !important; transition:none !important; animation:none !important; }
+    }
+  
+    /* ======== Certificate ======== */
+    .cert-modal-backdrop{
+      position:fixed; inset:0; background: rgba(0,0,0,.45);
+      display:none; align-items:center; justify-content:center;
+      padding: 16px; z-index: 60;
+    }
+    .cert-modal{
+      background: var(--card);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      border-radius: 18px;
+      width: min(520px, 92vw);
+      padding: 18px;
+    }
+    .cert-input{
+      width:100%;
+      border: 1px solid var(--line);
+      background: var(--card);
+      border-radius: 14px;
+      padding: 12px 12px;
+    }
+
+    /* Off-screen certificate canvas (rendered to PDF) */
+    #certificateSheet{
+      position: fixed;
+      left: -100000px;
+      top: 0;
+      width: 1240px;
+      height: 1754px;
+    }
+    body.exporting #certificateSheet, body.exporting #certificateSheet *{
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+      font-kerning: none;
+    }
+
+    .cert-page{
+      width: 1240px;
+      height: 1754px;
+      position: relative;
+      background: url('cert_bg.png') center/cover no-repeat;
+      color: #2b2b2b;
+    }
+    .cert-logo{
+      position:absolute;
+      top: 90px;
+      left: calc(50% + 70px);
+      transform: translateX(-50%);
+      height: 380px;
+    }
+    
+    .cert-side-label{display:none !important;}
+
+    .cert-title{
+      position:absolute;
+      top: 372px;
+      left: calc(50% + 70px);
+      transform: translateX(-50%);
+      text-align:center;
+      font-family: Lora, Georgia, serif;
+      letter-spacing: .22em;
+      font-size: 64px;
+      color: rgba(40,40,40,.85);
+      line-height: 1.1;
+    }
+    .cert-sub{
+      position:absolute;
+      top: 567px;
+      left: calc(50% + 70px);
+      transform: translateX(-50%);
+      text-align:center;
+      font-size: 26px;
+      color: rgba(40,40,40,.55);
+      letter-spacing: .12em;
+      font-style: italic;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    .cert-name{
+      position:absolute;
+      top: 662px;
+      left: calc(50% + 70px);
+      transform: translateX(-50%);
+      width: 720px;
+      text-align:center;
+      font-family: "Brush Script MT", "Segoe Script", "Snell Roundhand", cursive;
+      font-size: 68px;
+      color: rgba(35,35,35,.9);
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(40,40,40,.25);
+    }
+    .cert-body{
+      position:absolute;
+      top: 802px;
+      left: calc(50% + 70px);
+      transform: translateX(-50%);
+      width: 760px;
+      text-align:center;
+      font-size: 26px;
+      line-height: 1.65;
+      color: rgba(40,40,40,.70);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    .cert-body strong{
+      font-weight: 600;
+      color: rgba(35,35,35,.85);
+    }
+    .cert-mantra{
+      position:absolute;
+      top: 1097px;
+      left: calc(50% + 70px);
+      transform: translateX(-50%);
+      width: 760px;
+      text-align:center;
+      font-family: Lora, Georgia, serif;
+      font-size: 30px;
+      font-style: italic;
+      color: rgba(40,40,40,.65);
+      line-height: 1.35;
+    }
+    .cert-signature{
+  position:absolute;
+  left:80px;
+  right:0;
+  bottom:80px;
+  text-align:center;
+}
+    .cert-signature img{
+  width: 560px;
+  max-width: 78%;
+  height: auto;
+  display:block;
+  margin: 0 auto;
+}
+    .cert-signature .name{ font-size: 24px; }
+    .cert-signature .role{ font-size: 22px; opacity: .8; }
+    .cert-date{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:78px;
+  text-align:center;
+  font-size:24px;
+  line-height:1.2;
+  color:#6b6b6b;
+}
+    .cert-id{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:40px;
+  text-align:center;
+  font-size:16px;
+  letter-spacing:0.08em;
+  color:#9a9a9a;
+}
+
+  
+.certFooter {
+  text-align: center;
+  margin-top: 6px;
+  font-size: 11px;
+  opacity: 0.5;
+  letter-spacing: 0.05em;
+}
+
+/* ---- Pantalla final (cierre) ---- */
+.finalScreen{
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,.82);
+  backdrop-filter: blur(6px);
+  z-index: 9000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 18px;
+}
+.finalScreen.hidden{ display:none; }
+.finalCard{
+  width: min(760px, 96vw);
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.06);
+  border-radius: 18px;
+  box-shadow: 0 18px 60px rgba(0,0,0,.12);
+  padding: 28px 26px;
+}
+.finalKicker{
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-bottom: 8px;
+}
+.finalTitle{
+  font-size: 34px;
+  line-height: 1.15;
+  margin: 0 0 12px;
+}
+.finalText{
+  font-size: 16px;
+  line-height: 1.6;
+  color:#4d4d4d;
+  margin-bottom: 18px;
+}
+.finalActions{
+  display:flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.finalActions .btn{
+  padding: 10px 14px;
+  border-radius: 12px;
+}
+.finalSmall{
+  font-size: 12px;
+  color:#8c8c8c;
+}
+/* Certificado modal siempre por encima */
+#certBackdrop, .certBackdrop, .cert-backdrop, #certModalBackdrop, .certModalBackdrop{
+  z-index: 99999 !important;
+}
+
+
+    .course-access-gate{position:fixed; inset:0; background:rgba(15,15,15,.58); z-index:999999; display:none; align-items:center; justify-content:center; padding:18px;}
+    .course-access-card{background:var(--card); border:1px solid var(--line); box-shadow:var(--shadow); border-radius:18px; width:min(520px, 92vw); padding:22px;}
+    .course-access-input{width:100%; border:1px solid var(--line); background:var(--card); border-radius:14px; padding:12px 12px;}
+    .course-access-row{display:flex; gap:10px; align-items:center;}
+    .course-access-toggle{white-space:nowrap;}
+    .course-access-note{margin-top:14px; color:var(--muted); font-size:12px; line-height:1.6;}
+    .course-access-error{min-height:20px; margin-top:10px; color:#b91c1c; font-size:13px;}
+    @media (max-width:680px){ .course-access-row{flex-direction:column; align-items:stretch;} .course-access-toggle,.course-access-submit{width:100%;} }
+
+</style>
+
+  <link rel="manifest" href="/mcB-volviendo-a-ti/manifest.json">
+  <meta name="theme-color" content="#c9b3a6">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Método McB">
+  <link rel="apple-touch-icon" href="/mcB-volviendo-a-ti/icon-192.png">
+</head>
+
+<body>
+
+
+<div id="courseAccessGate" class="course-access-gate" aria-hidden="true">
+  <div class="course-access-card">
+    <div class="serif text-lg">Acceso privado</div>
+    <p class="text-sm mt-2" style="color: var(--muted);">Este contenido forma parte del área privada del Método McB. Introduce tu clave para continuar.</p>
+    <p class="course-access-note"><strong>Acceso personal e intransferible.</strong> Recibirás tu clave individual tras confirmar tu Bizum.</p>
+    <label class="block mt-4">
+      <span class="text-xs" style="color: var(--muted);">Clave de acceso</span>
+      <div class="course-access-row mt-1">
+        <input class="course-access-input focus-ring" id="courseAccessInput" type="password" placeholder="Introduce tu clave">
+        <button class="btn focus-ring course-access-toggle" id="courseAccessToggle" type="button">Mostrar</button>
+      </div>
+    </label>
+    <div id="courseAccessError" class="course-access-error"></div>
+    <div class="mt-4 flex justify-end">
+      <button class="btn btn-primary focus-ring course-access-submit" id="courseAccessBtn" type="button">Entrar</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="finalScreen" class="finalScreen hidden" aria-hidden="true">
+  <div class="finalCard">
+    <div class="finalKicker">Has completado el viaje</div>
+    <div class="finalTitle">Mindfulness del Cuidado</div>
+    <div class="finalText">
+      Gracias por sostenerte estos días. Lo que has hecho no es solo aprender: es volver a ti, paso a paso.
+    </div>
+    <div class="finalActions">
+      <button class="btn primary" id="finalOpenCertBtn" type="button">Descargar certificado</button>
+      <button class="btn" id="finalBackBtn" type="button">Volver al curso</button>
+    </div>
+    <div class="finalSmall">Tu progreso queda guardado en tu dispositivo.</div>
+  </div>
+</div>
+
+  <a class="sr-only focus:not-sr-only focus-ring fixed top-3 left-3 z-50 btn" href="#main">Saltar al contenido</a>
+
+  <header class="max-w-6xl mx-auto px-4 pt-6">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-2xl border" style="border-color: var(--line); background: linear-gradient(135deg, rgba(181,140,149,0.22), rgba(126,154,138,0.18));"></div>
+        <div>
+          <div class="text-xs tracking-wide" style="color: var(--muted);">Curso interactivo</div>
+          <h1 class="text-xl md:text-2xl serif">Mindfulness del Cuidado</h1>
+          <div class="text-sm" style="color: var(--muted);">Momentos con Blancanieves</div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="chip" id="chipXp" aria-label="Puntos de experiencia">XP: 0</span>
+        <span class="chip" id="chipStreak" aria-label="Racha diaria">Racha: 0</span>
+        <button class="btn focus-ring" id="btnToggleTheme" type="button" aria-label="Cambiar modo claro u oscuro">
+          Modo
+        </button>
+        <button class="btn focus-ring" id="btnReset" type="button" aria-label="Reiniciar progreso">
+          Reiniciar
+        </button>
+        <button class="btn focus-ring" id="btnRitual" type="button" aria-label="Abrir el Ritual de 21 días">
+          Ritual 21 días
+        </button>
+      </div>
+    </div>
+
+    <div class="mt-6 card p-4 md:p-5">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h2 class="serif text-lg">Progreso del curso</h2>
+          <p class="text-sm mt-1" style="color: var(--muted);">
+            Seis lecciones: teoría, práctica e integración, con ejercicios y prueba final.
+          </p>
+        </div>
+
+        <div class="w-full md:w-80">
+          <div class="flex items-center justify-between text-xs" style="color: var(--muted);">
+            <span id="progressLabel">0% completado</span>
+            <span id="progressDetail">0/6 lecciones</span>
+          </div>
+          <div class="h-2 rounded-full progress-rail mt-2 overflow-hidden" aria-hidden="true">
+            <div id="progressBar" class="h-2 rounded-full progress-fill" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-5 grid grid-cols-6 gap-3 md:gap-4 items-center" aria-label="Camino de lecciones" role="navigation">
+        <button class="path-node focus-ring" data-lesson="1" aria-label="Abrir lección 01" id="node1">01</button>
+        <div class="h-px" style="background: var(--line);"></div>
+        <button class="path-node focus-ring" data-lesson="2" aria-label="Abrir lección 02" id="node2">02</button>
+        <div class="h-px" style="background: var(--line);"></div>
+        <button class="path-node focus-ring" data-lesson="3" aria-label="Abrir lección 03" id="node3">03</button>
+      </div>
+
+      <div class="mt-4 grid grid-cols-6 gap-3 md:gap-4 items-center">
+        <button class="path-node focus-ring" data-lesson="4" aria-label="Abrir lección 04" id="node4">04</button>
+        <div class="h-px" style="background: var(--line);"></div>
+        <button class="path-node focus-ring" data-lesson="5" aria-label="Abrir lección 05" id="node5">05</button>
+        <div class="h-px" style="background: var(--line);"></div>
+        <button class="path-node focus-ring" data-lesson="6" aria-label="Abrir lección 06" id="node6">06</button>
+      </div>
+
+      <div class="mt-5 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+        <div class="text-sm" style="color: var(--muted);">
+          Consejo: usa <span class="kbd">Tab</span> para moverte y <span class="kbd">Enter</span> para abrir una lección.
+        </div>
+        <div class="flex gap-2">
+          <button class="btn btn-primary focus-ring" id="btnStart" type="button">Empezar</button>
+          <button class="btn focus-ring" id="btnReview" type="button">Repaso</button>
+                  <button class="btn btn-primary focus-ring hidden" id="btnDownloadCert" type="button" aria-label="Descargar certificado">Descargar certificado</button>
+</div>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="max-w-6xl mx-auto px-4 py-8">
+    <section class="card p-5 md:p-6" id="panel">
+      <!-- content injected -->
+    </section>
+
+    <section class="mt-6 card p-5 md:p-6 hidden" id="panelReview" aria-label="Panel de repaso">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h2 class="serif text-lg">Repaso</h2>
+          <p class="text-sm mt-1" style="color: var(--muted);">
+            Preguntas que has fallado o dejado pendientes, con recomendaciones de secciones.
+          </p>
+        </div>
+        <button class="btn focus-ring" id="btnCloseReview" type="button">Cerrar</button>
+      </div>
+      <div class="mt-4" id="reviewList"></div>
+    </section>
+
+    <footer class="mt-8 text-xs" style="color: var(--muted);">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+        <div>Mindfulness del Cuidado · Momentos con Blancanieves</div>
+        <div>Progreso guardado en tu dispositivo (localStorage).</div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Modal Reset -->
+  <div class="fixed inset-0 bg-black/40 hidden" id="modalBackdrop" aria-hidden="true"></div>
+  <div class="fixed inset-0 hidden items-center justify-center p-4" id="modalWrap" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="card w-full max-w-lg p-5">
+      <h3 class="serif text-lg" id="modalTitle">Reiniciar progreso</h3>
+      <p class="text-sm mt-2" style="color: var(--muted);">
+        Esto borrará XP, racha, ejercicios completados y preguntas de repaso en este dispositivo.
+      </p>
+      <div class="mt-5 flex gap-2 justify-end">
+        <button class="btn focus-ring" id="btnCancelReset" type="button">Cancelar</button>
+        <button class="btn btn-primary focus-ring" id="btnConfirmReset" type="button">Reiniciar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Certificado -->
+  <div class="cert-modal-backdrop" id="certBackdrop" role="dialog" aria-modal="true" aria-labelledby="certTitle">
+    <div class="cert-modal">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h3 class="serif text-lg" id="certTitle">Descargar certificado</h3>
+          <p class="text-sm mt-1" style="color: var(--muted);">
+            Escribe tu nombre y apellidos tal y como quieres que aparezca.
+          </p>
+        </div>
+        <button class="btn focus-ring" id="btnCloseCert" type="button" aria-label="Cerrar">Cerrar</button>
+      </div>
+
+      <div class="mt-4">
+        <label class="block">
+          <span class="text-xs" style="color: var(--muted);">Nombre de la participante</span>
+          <input class="cert-input focus-ring mt-1" id="certNameInput" type="text" placeholder="Nombre y apellidos">
+        </label>
+      </div>
+
+      <div class="mt-5 flex gap-2 justify-end">
+        <button class="btn focus-ring" id="btnCancelCert" type="button">Cancelar</button>
+        <button class="btn btn-primary focus-ring" id="btnConfirmCert" type="button">Generar PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hoja del certificado (se renderiza a PDF; queda fuera de pantalla) -->
+  <div id="certificateSheet" aria-hidden="true">
+    <div class="cert-page">
+      <img class="cert-logo" src="logo3d.png" alt="McB">
+
+      
+      
+<div class="cert-title">DE FINALIZACIÓN</div>
+      <div class="cert-sub">Por la presente se certifica que</div>
+
+      <div class="cert-name" id="certNameOut">(nombre)</div>
+
+      <div class="cert-body">
+        <p><strong>Ha completado con éxito el viaje de Mindfulness del Cuidado y ha vuelto a sí.</strong></p>
+        <p>
+          Ha completado el programa completo del Método McB y el Ritual de 21 días, integrando la práctica de la pausa consciente
+          para transformar su diálogo interno y elegirse sin restarse valor.
+        </p>
+      </div>
+
+      <div class="cert-mantra">
+        <div>Soy quien soy</div>
+        <div>Me reconozco y me elijo sin restarme valor.</div>
+      </div>
+
+      <div class="cert-signature">
+        <img src="signature.png" alt="Momentos con Blancanieves">
+</div>
+
+      <div class="cert-date" id="certDateOut">Fecha de finalización: —</div>
+      <div class="cert-id" id="certIdOut"></div>
+    </div>
+  </div>
+
+
+  <script>
+    // ======== Contenido (embebido, sin dependencias locales) ========
+    // Basado en el documento aportado por la usuaria. fileciteturn2file0
+    const COURSE = {
+      meta: {
+        title: "Mindfulness del Cuidado",
+        subtitle: "La belleza consciente como ritual diario",
+        author: "Momentos con Blancanieves"
+      },
+      lessons: [
+        {
+          id: 1,
+          code: "01",
+          title: "Introducción",
+          deckTitle: "Introducción a la Mindfulness del Cuidado: Conceptos Clave y Beneficios",
+          sections: [
+            {
+              heading: "Qué es la mindfulness del cuidado",
+              body: [
+                "La mindfulness del cuidado integra la atención plena con el objetivo de mejorar la calidad del cuidado que se brinda a uno mismo y a los demás. No se limita a la atención plena tradicional: se extiende al cuidado emocional, físico y mental."
+              ]
+            },
+            {
+              heading: "Conceptos clave",
+              list: [
+                {
+                  title: "Atención plena",
+                  text: "Capacidad de estar presente en el momento actual sin juicios. Implica observar pensamientos, emociones y sensaciones sin intentar cambiarlos. En el cuidado, permite estar más atentos a las necesidades propias y de otras personas."
+                },
+                {
+                  title: "Auto-compasión",
+                  text: "Practicar la amabilidad con uno mismo ante sufrimiento o fracaso. Ayuda a evitar desgaste emocional y promueve un cuidado más efectivo."
+                },
+                {
+                  title: "Empatía",
+                  text: "Comprender y compartir los sentimientos de otro. Fortalece la conexión y hace el cuidado más sensible y consciente."
+                },
+                {
+                  title: "Práctica reflexiva",
+                  text: "Reflexión sobre experiencias pasadas para aprender, reconocer patrones, mejorar habilidades y ajustar respuestas."
+                }
+              ]
+            },
+            {
+              heading: "Beneficios",
+              list: [
+                {
+                  title: "Mejora de la salud mental",
+                  text: "La práctica regular reduce estrés, ansiedad y depresión, y sostiene el bienestar emocional."
+                },
+                {
+                  title: "Aumento de la satisfacción en el cuidado",
+                  text: "Estar más presente permite disfrutar del acto de cuidar, haciendo la experiencia más enriquecedora."
+                },
+                {
+                  title: "Fortalecimiento de las relaciones",
+                  text: "Desarrollar empatía y comunicación favorece vínculos más significativos y un ambiente de confianza."
+                },
+                {
+                  title: "Prevención del desgaste emocional",
+                  text: "Ofrece herramientas para gestionar estrés y fatiga y mantener un enfoque equilibrado."
+                },
+                {
+                  title: "Promoción del bienestar integral",
+                  text: "Enfoque holístico: atender necesidades físicas, mentales y emocionales para mejorar calidad de vida."
+                }
+              ]
+            }
+          ],
+          completeHint: "Marca esta lección como completada cuando hayas leído y comprendido los conceptos clave."
+        },
+        {
+          id: 2,
+          code: "02",
+          title: "Prácticas",
+          deckTitle: "Prácticas de Mindfulness para el Cuidado Personal: Estrategias y Ejercicios",
+          sections: [
+            {
+              heading: "Introducción al mindfulness en el cuidado personal",
+              body: [
+                "El mindfulness invita a estar presentes en el momento actual. En el cuidado personal, ayuda a fomentar autoconciencia, regulación emocional y bienestar general. Permite manejar el estrés, mejorar la calidad de vida y fortalecer la conexión cuerpo-mente."
+              ]
+            },
+            {
+              heading: "Estrategias de mindfulness",
+              list: [
+                {
+                  title: "Respiración consciente",
+                  text: "Encuentra un lugar tranquilo. Cierra los ojos y observa el flujo natural de inhalación y exhalación. Si la mente divaga, reconoce y regresa a la respiración. Practica varios minutos y aumenta gradualmente."
+                },
+                {
+                  title: "Escaneo corporal",
+                  text: "Acuéstate cómodo/a, respira profundo. Recorre con tu atención desde la cabeza hasta los pies, notando tensión o sensaciones. Permite que la tensión se disuelva con cada exhalación."
+                },
+                {
+                  title: "Meditación sentada",
+                  text: "Siéntate con la espalda recta pero no rígida. Dirige atención a la respiración. Observa pensamientos sin juicio y vuelve a la respiración. Empieza con 5 a 10 minutos."
+                },
+                {
+                  title: "Paseo consciente",
+                  text: "Camina en un lugar tranquilo. Concéntrate en cada paso y en el contacto con el suelo. Observa colores, sonidos y olores. Mantén una respiración consciente."
+                }
+              ]
+            },
+            {
+              heading: "Ejercicios para el cuidado personal",
+              list: [
+                {
+                  title: "Diario de gratitud",
+                  text: "Anota cada día tres cosas por las que sientes gratitud. Refuerza una mentalidad positiva."
+                },
+                {
+                  title: "Práctica de agradecimiento",
+                  text: "Envía mensajes de agradecimiento a personas que hayan impactado positivamente en tu vida. Fortalece vínculos."
+                },
+                {
+                  title: "Técnicas de visualización",
+                  text: "Imagina un lugar que te dé paz. Explora detalles mientras respiras de forma constante. Úsalo como refugio mental."
+                },
+                {
+                  title: "Mindfulness en la alimentación",
+                  text: "Come despacio, sin distracciones. Observa sabores, texturas y olores. Nota cómo se siente tu cuerpo durante y después."
+                }
+              ]
+            },
+            {
+              heading: "Beneficios del mindfulness en el cuidado personal",
+              body: [
+                "Reduce el estrés, mejora el bienestar emocional, aumenta la autoconciencia y fortalece la conexión cuerpo-mente."
+              ]
+            }
+          ],
+          completeHint: "Completa esta lección cuando hayas leído y practicado al menos una estrategia."
+        },
+        {
+          id: 3,
+          code: "03",
+          title: "Integración",
+          deckTitle: "Integración de la Mindfulness del Cuidado en la Vida Cotidiana: Creando Hábitos Sostenibles",
+          sections: [
+            {
+              heading: "La esencia de la mindfulness del cuidado",
+              body: [
+                "Integrar la mindfulness del cuidado implica estar presente con pensamientos, emociones y acciones, y reconocer nuestras necesidades. Es un enfoque proactivo basado en autocuidado y auto-compasión."
+              ]
+            },
+            {
+              heading: "Crear hábitos sostenibles",
+              list: [
+                {
+                  title: "Autoobservación y reflexión",
+                  text: "Reflexiona sobre tus rutinas y cómo te sientes. Preguntas guía: '¿Qué momentos del día me siento más estresada?' '¿Qué actividades me hacen sentir bien?'"
+                },
+                {
+                  title: "Establecimiento de intenciones",
+                  text: "Define intenciones claras. Por ejemplo: dedicar diez minutos diarios a meditación o respiración consciente."
+                },
+                {
+                  title: "Microprácticas cotidianas",
+                  text: "Pequeños momentos: respiraciones profundas, comer con atención, movilidad consciente mientras caminas."
+                },
+                {
+                  title: "Crear un ambiente de apoyo",
+                  text: "Mantén un entorno ordenado, integra elementos naturales (plantas, luz natural, aromas agradables) para favorecer la calma."
+                },
+                {
+                  title: "Reconocer progresos y ajustar",
+                  text: "Sé compasiva contigo. Registra avances y ajusta prácticas sin juzgarte."
+                },
+                {
+                  title: "Construir comunidad",
+                  text: "Compartir experiencias en grupos o clases aporta motivación y nuevas ideas."
+                }
+              ]
+            },
+            {
+              heading: "Reflexiones finales",
+              body: [
+                "Es un viaje personal. Con tiempo y práctica se fomenta una relación más amable con uno mismo y con el entorno, mejorando el bienestar y contribuyendo a comunidades más saludables."
+              ]
+            }
+          ],
+          completeHint: "Marca completada cuando hayas definido al menos una intención para tu semana."
+        },
+        {
+          id: 4,
+          code: "04",
+          title: "Práctica",
+          deckTitle: "Ejercicios Prácticos: pongamos en práctica tus conocimientos",
+          exercises: [
+            {
+              id: "ex-beneficios",
+              title: "Reflexión sobre los beneficios de la mindfulness",
+              prompt: "Escribe (para ti) dos beneficios que te gustaría notar en tu vida en las próximas dos semanas. Luego elige una microacción diaria para sostenerlos.",
+              fields: [
+                { id: "b1", label: "Beneficio 1", placeholder: "Por ejemplo: reducción del estrés" },
+                { id: "b2", label: "Beneficio 2", placeholder: "Por ejemplo: mejorar mis relaciones" },
+                { id: "a1", label: "Microacción diaria", placeholder: "Por ejemplo: 3 respiraciones conscientes antes de dormir" }
+              ]
+            },
+            {
+              id: "ex-respiracion",
+              title: "Ejercicio de respiración consciente",
+              prompt: "Durante 2 minutos, observa tu respiración. Si te distraes, vuelve sin juicio. Cuando termines, anota cómo te sientes.",
+              fields: [
+                { id: "r1", label: "¿Cómo me siento ahora?", placeholder: "Escribe una frase breve" }
+              ],
+              timerSeconds: 120
+            },
+            {
+              id: "ex-plan",
+              title: "Creación de un plan de acción para hábitos de mindfulness",
+              prompt: "Define una intención y tres microprácticas realistas para esta semana. Manténlo simple y sostenible.",
+              fields: [
+                { id: "i1", label: "Mi intención", placeholder: "Por ejemplo: cuidarme con más presencia" },
+                { id: "m1", label: "Micropráctica 1", placeholder: "Por ejemplo: escaneo corporal 5 minutos" },
+                { id: "m2", label: "Micropráctica 2", placeholder: "Por ejemplo: comer sin pantalla una vez al día" },
+                { id: "m3", label: "Micropráctica 3", placeholder: "Por ejemplo: paseo consciente 10 minutos" }
+              ]
+            }
+          ],
+          completeHint: "Completa esta lección cuando marques los 3 ejercicios como hechos."
+        },
+        {
+          id: 5,
+          code: "05",
+          title: "Resumen",
+          deckTitle: "Resumen: repasemos lo visto hasta ahora",
+          sections: [
+            {
+              heading: "Ideas clave",
+              bullets: [
+                "La introducción a la Mindfulness del Cuidado aporta herramientas para comprender y aplicar esta práctica en la vida diaria.",
+                "Las prácticas de mindfulness para el cuidado personal cultivan bienestar emocional y físico y sostienen el autocuidado.",
+                "Integrar la mindfulness del cuidado en la vida cotidiana ayuda a crear hábitos sostenibles para un estilo de vida consciente y equilibrado."
+              ]
+            }
+          ],
+          completeHint: "Marca completada cuando puedas explicar en tus palabras qué significa cuidar con atención plena."
+        },
+        {
+          id: 6,
+          code: "06",
+          title: "Prueba",
+          deckTitle: "Prueba: comprueba tus conocimientos",
+          quiz: [
+            {
+              id: "q1",
+              question: "¿Cuál es una estrategia para crear hábitos sostenibles de mindfulness del cuidado?",
+              options: [
+                "Establecer recordatorios diarios para practicar mindfulness.",
+                "Evitar la planificación.",
+                "Desconectarse completamente de la tecnología."
+              ],
+              correctIndex: 0,
+              explain: "Un recordatorio diario facilita la repetición y, con ello, la sostenibilidad del hábito."
+            },
+            {
+              id: "q2",
+              question: "¿Qué es la mindfulness del cuidado?",
+              options: [
+                "Una técnica de meditación que se centra en el cuidado de otros.",
+                "Una práctica que promueve la auto-compasión y el bienestar personal.",
+                "Un enfoque de cuidado que se basa en la productividad."
+              ],
+              correctIndex: 1,
+              explain: "Este enfoque integra atención plena y auto-compasión para el bienestar personal (y, desde ahí, el cuidado)."
+            },
+            {
+              id: "q3",
+              question: "¿Cuál es un beneficio principal de la mindfulness del cuidado?",
+              options: [
+                "Aumenta los niveles de estrés.",
+                "Mejora la calidad de las relaciones personales.",
+                "Reduce el tiempo de descanso."
+              ],
+              correctIndex: 1,
+              explain: "La empatía y la presencia favorecen vínculos más sanos y una comunicación más consciente."
+            },
+            {
+              id: "q4",
+              question: "¿Cómo se puede medir el impacto de la mindfulness del cuidado en la vida diaria?",
+              options: [
+                "A través de la observación de la reducción del estrés y la mejora del bienestar general.",
+                "Analizando el tiempo dedicado a las tareas.",
+                "Contando las horas de trabajo menos productivas."
+              ],
+              correctIndex: 0,
+              explain: "El impacto se observa en indicadores de bienestar: estrés, calma, claridad, relación contigo."
+            },
+            {
+              id: "q5",
+              question: "¿Cuál de las siguientes es una práctica de mindfulness para el cuidado personal?",
+              options: [
+                "Revisar correos electrónicos mientras se come.",
+                "Realizar ejercicios de respiración consciente.",
+                "Multitasking en el trabajo."
+              ],
+              correctIndex: 1,
+              explain: "La respiración consciente es una estrategia base para volver al presente y regular el estrés."
+            },
+            {
+              id: "q6",
+              question: "¿Qué se busca al integrar la mindfulness del cuidado en la vida cotidiana?",
+              options: [
+                "Creación de hábitos insostenibles.",
+                "Promoción del autocuidado y la atención plena en las actividades diarias.",
+                "Aumento del ritmo de vida."
+              ],
+              correctIndex: 1,
+              explain: "Se busca un estilo de vida más consciente, equilibrado y compasivo."
+            }
+          ]
+        }
+      ],
+      encouragement: [
+        "Respira. Estás aprendiendo. El progreso real es tranquilo.",
+        "No se trata de hacerlo perfecto, sino de volver al gesto.",
+        "Tómatelo como práctica: observa, ajusta y continúa.",
+        "Lo importante es sostenerlo. Un paso pequeño es suficiente."
+      ]
+    };
+
+    // ======== Estado persistente ========
+    const STORAGE_KEY = "mcb_mindfulness_curso_v1";
+    const todayKey = () => new Date().toISOString().slice(0,10);
+
+    const defaultState = () => ({
+      theme: "light",
+      xp: 0,
+      streak: 0,
+      lastActiveDate: null,
+      completedLessons: {}, // {1:true,...}
+      completedExercises: {}, // {exerciseId:true}
+      exerciseNotes: {}, // {fieldId:value}
+      missedQuiz: {}, // {qId: {misses: n, lastMissDate, selectedIndices: []}}
+      quizAnswers: {}, // {qId: chosenIndex}
+      lastLesson: 1,
+      sessionWrongCount: 0,
+      participantName: "",
+      completedAt: null,
+      certificateId: ""
+    });
+
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return defaultState();
+        const parsed = JSON.parse(raw);
+        return { ...defaultState(), ...parsed };
+      }catch(e){
+        return defaultState();
+      }
+    }
+
+    function saveState(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    let state = loadState();
+
+    // ======== Utilidades ========
+    const $ = (sel) => document.querySelector(sel);
+    const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+    function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+
+    function setTheme(theme){
+      state.theme = theme;
+      document.documentElement.classList.toggle("dark", theme === "dark");
+      saveState();
+    }
+
+    function toggleTheme(){
+      setTheme(state.theme === "dark" ? "light" : "dark");
+      renderHeader();
+    }
+
+    function incrementStreakIfNeeded(){
+      const t = todayKey();
+      if(state.lastActiveDate === t) return;
+      // If last active was yesterday, increment. Otherwise reset to 1.
+      if(state.lastActiveDate){
+        const last = new Date(state.lastActiveDate + "T00:00:00");
+        const now = new Date(t + "T00:00:00");
+        const diffDays = Math.round((now - last) / 86400000);
+        state.streak = (diffDays === 1) ? (state.streak + 1) : 1;
+      }else{
+        state.streak = 1;
+      }
+      state.lastActiveDate = t;
+      saveState();
+    }
+
+    function addXP(amount, reason){
+      const a = Number(amount) || 0;
+      if(a <= 0) return;
+      state.xp = (state.xp || 0) + a;
+      saveState();
+      renderHeader();
+    }
+
+    function lessonUnlocked(id){
+      if(id === 1) return true;
+      // Unlock sequentially: previous lesson completed OR allow jump (editorial). We'll do gentle gating:
+      return !!state.completedLessons[id - 1];
+    }
+
+    function lessonStatus(id){
+      if(state.completedLessons[id]) return "done";
+      if(id === state.lastLesson) return "current";
+      if(lessonUnlocked(id)) return "available";
+      return "locked";
+    }
+
+    function completionCount(){
+      return Object.values(state.completedLessons).filter(Boolean).length;
+    }
+
+    function progressPct(){
+      return Math.round((completionCount() / COURSE.lessons.length) * 100);
+    }
+
+    function isCourseCompleted(){
+      return completionCount() === COURSE.lessons.length;
+    }
+
+    
+    function ritualCompletionCount(){
+      try{
+        const raw = localStorage.getItem("mcb_21_v1");
+        if(!raw) return 0;
+        const st = JSON.parse(raw);
+        // En el ritual original, days puede ser array u objeto; contamos los completados
+        const days = st?.days;
+        if(Array.isArray(days)){
+          return days.filter(d => d && d.completedOn).length;
+        }
+        if(days && typeof days === "object"){
+          return Object.values(days).filter(d => d && d.completedOn).length;
+        }
+        return 0;
+      }catch(_){ return 0; }
+    }
+    function isProgramCompleted(){
+      return isCourseCompleted() && ritualCompletionCount() >= 21;
+    }
+function updateCertUI(){
+      const btn = document.getElementById("btnDownloadCert");
+      if(!btn) return;
+      btn.classList.toggle("hidden", !isProgramCompleted());
+    }
+
+    function formatDateES(d){
+      const day = d.getDate();
+      const months = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+      return `${day} de ${months[d.getMonth()]} de ${d.getFullYear()}`;
+    }
+
+    async function waitImagesAndFonts(rootEl){
+      const imgs = Array.from(rootEl.querySelectorAll("img"));
+      await Promise.all(imgs.map(img => img.complete ? Promise.resolve() : new Promise(resolve => {
+        img.addEventListener("load", resolve, { once:true });
+        img.addEventListener("error", resolve, { once:true });
+      })));
+      if(document.fonts && document.fonts.ready){
+        try{ await document.fonts.ready; }catch(e){}
+      }
+      // micro-pausa para que el layout se asiente
+      await new Promise(r => setTimeout(r, 80));
+    }
+
+    async function generateCertificatePDF(participantName){
+      // Rellena el certificado en el DOM
+      const safeName = String(participantName || "").trim();
+      document.getElementById("certNameOut").textContent = safeName || "(nombre)";
+
+      // Fecha real de finalización (blindado): se fija al completar el programa.
+      const finalDate = state.completedAt ? new Date(state.completedAt) : new Date();
+      const months = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+      document.getElementById("certDateOut").textContent =
+        `${finalDate.getDate()} de ${months[finalDate.getMonth()]} de ${finalDate.getFullYear()}`;
+
+      // ID del certificado
+      document.getElementById("certIdOut").textContent = state.certificateId || "";
+
+      const certEl = document.querySelector("#certificateSheet .cert-page");
+      if(!certEl){
+        throw new Error("No se encontró el certificado en el DOM.");
+      }
+
+      // Espera a que carguen imágenes y fuentes antes de capturar
+      await waitImagesAndFonts(certEl);
+
+      // Fuerza un layout estable durante la exportación
+      document.body.classList.add("exporting");
+
+      try{
+        const canvas = await html2canvas(certEl, {
+          backgroundColor: "#ffffff",
+          scale: Math.min(3, (window.devicePixelRatio || 1) * 2),
+          useCORS: true,
+          allowTaint: false,
+          logging: false,
+          scrollX: 0,
+          scrollY: -window.scrollY,
+          windowWidth: certEl.scrollWidth,
+          windowHeight: certEl.scrollHeight
+        });
+
+        const imgData = canvas.toDataURL("image/jpeg", 0.95);
+
+        if(!window.jspdf || !window.jspdf.jsPDF){
+          // Fallback (raro): abre vista imprimible
+          openPrintOverlay();
+          return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF("p", "mm", "a4");
+        const pageW = pdf.internal.pageSize.getWidth();
+        const pageH = pdf.internal.pageSize.getHeight();
+
+        // Ajuste a A4 (1 página) manteniendo proporción y centrado
+        const scale = Math.min(pageW / canvas.width, pageH / canvas.height);
+        const drawW = canvas.width * scale;
+        const drawH = canvas.height * scale;
+        const x = (pageW - drawW) / 2;
+        const y = (pageH - drawH) / 2;
+
+        pdf.addImage(imgData, "JPEG", x, y, drawW, drawH, undefined, "FAST");
+const base = (state.certificateId || "Certificado_McB").replace(/[^a-zA-Z0-9_-]+/g, "_");
+        // Descarga robusta en Android (evita bloqueos de `save` tras awaits)
+        try{
+          const blob = pdf.output("blob");
+          const url = URL.createObjectURL(blob);
+
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `${base}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+
+          setTimeout(() => URL.revokeObjectURL(url), 2000);
+        }catch(e){
+          // Último recurso: abre el PDF en una pestaña para que el usuario lo guarde/comparta
+          try{
+            const blob = pdf.output("blob");
+            const url = URL.createObjectURL(blob);
+            window.open(url, "_blank");
+            setTimeout(() => URL.revokeObjectURL(url), 60000);
+          }catch(_e){
+            openPrintOverlay();
+          }
+        }
+      } finally {
+        document.body.classList.remove("exporting");
+      }
+    }
+
+    function openLesson(id){
+      id = Number(id);
+      state.lastLesson = id;
+      incrementStreakIfNeeded();
+      saveState();
+      $("#panelReview").classList.add("hidden");
+      $("#panel").classList.remove("hidden");
+      renderLesson(id);
+      renderHeader();
+      renderPath();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function openRitual(fromLessonId){
+      state.ritualReturnLesson = Number(fromLessonId || state.lastLesson || 1);
+      incrementStreakIfNeeded();
+      saveState();
+      $("#panelReview").classList.add("hidden");
+      $("#panel").classList.remove("hidden");
+      renderRitual();
+      renderHeader();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderRitual(){
+      $("#panel").innerHTML = `
+        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+          <div>
+            <div class="text-xs tracking-wide" style="color: var(--muted);">Ritual</div>
+            <h2 class="serif text-2xl">McB · 21 días para volver a ti</h2>
+            <div class="text-sm mt-1" style="color: var(--muted);">
+              Puedes volver al curso cuando quieras. Tu progreso del ritual se guarda en tu dispositivo.
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button class="btn focus-ring" id="btnBackToLesson" type="button">Volver al curso</button>
+            <button class="btn btn-primary focus-ring" id="btnRitualFullscreen" type="button">Pantalla completa</button>
+          </div>
+        </div>
+
+        <div class="mt-5">
+          <div class="card p-0 overflow-hidden" style="box-shadow:none;">
+            <iframe id="ritualIframe" title="Ritual de 21 días" style="width:100%; height: 980px; border:0;"></iframe>
+          </div>
+          <div class="text-xs mt-3" style="color: var(--muted);">
+            Nota: si prefieres pantalla completa, usa “Pantalla completa”.
+          </div>
+        </div>
+      `;
+
+      $("#btnBackToLesson").addEventListener("click", () => openLesson(state.ritualReturnLesson || 1));
+      // Cargar el ritual embebido (un solo archivo)
+      const tpl = document.getElementById("ritualSrcDoc");
+      const iframe = document.getElementById("ritualIframe");
+      if(tpl && iframe){
+        // srcdoc debe asignarse tras inyectar el HTML
+        iframe.srcdoc = tpl.innerHTML;
+      }
+      const btnFull = document.getElementById("btnRitualFullscreen");
+      if(btnFull && tpl){
+        btnFull.addEventListener("click", () => {
+          const w = window.open("about:blank");
+          if(!w){ toast("Activa las ventanas emergentes para abrir en pantalla completa."); return; }
+          w.document.open();
+          w.document.write(tpl.innerHTML);
+          w.document.close();
+        });
+      }
+
+    }
+
+
+    function markLessonComplete(id){
+      if(state.completedLessons[id]) return;
+      state.completedLessons[id] = true;
+
+      // XP rules
+      const xpMap = {1:10,2:10,3:10,4:15,5:10,6:30};
+      addXP(xpMap[id] || 10);
+
+      // ======== Certificado (blindado) ========
+      // Solo se fija la fecha/ID la primera vez que se completa TODO el curso.
+      if(isCourseCompleted() && !state.completedAt){
+        state.completedAt = new Date().toISOString();
+
+        if(!state.certificateId){
+          let counter = parseInt(localStorage.getItem("mcbCertCounter") || "0", 10);
+          counter++;
+          localStorage.setItem("mcbCertCounter", String(counter));
+
+          const year = new Date(state.completedAt).getFullYear();
+          const padded = String(counter).padStart(4, "0");
+          state.certificateId = `McB-${year}-${padded}`;
+        }
+      }
+
+      saveState();
+      renderHeader();
+      renderPath();
+      updateCertUI();
+    }
+
+    // ======== Render ========
+    function renderHeader(){
+      $("#chipXp").textContent = `XP: ${state.xp || 0}`;
+      $("#chipStreak").textContent = `Racha: ${state.streak || 0}`;
+      $("#progressLabel").textContent = `${progressPct()}% completado`;
+      $("#progressDetail").textContent = `${completionCount()}/${COURSE.lessons.length} lecciones`;
+      $("#progressBar").style.width = `${progressPct()}%`;
+      $("#btnToggleTheme").textContent = (state.theme === "dark") ? "Claro" : "Oscuro";
+      updateCertUI();
+    }
+
+    function renderPath(){
+      for(let i=1;i<=6;i++){
+        const node = $("#node"+i);
+        const st = lessonStatus(i);
+        node.dataset.status = st;
+        const locked = (st === "locked");
+        node.disabled = locked;
+        node.setAttribute("aria-disabled", locked ? "true":"false");
+        node.title = locked ? "Completa la lección anterior para desbloquear" : "Abrir lección";
+      }
+    }
+
+    function renderWelcome(){
+      const meta = COURSE.meta;
+      $("#panel").innerHTML = `
+        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-5">
+          <div class="max-w-2xl">
+            <h2 class="serif text-2xl md:text-3xl">${escapeHTML(meta.title)}</h2>
+            <p class="text-sm mt-2" style="color: var(--muted);">${escapeHTML(meta.subtitle)}</p>
+            <p class="text-base mt-4 leading-relaxed">
+              Este curso te enseña cómo integrar prácticas de mindfulness en el cuidado personal y en tus interacciones diarias.
+              Aprenderás técnicas para estar presente, reducir el estrés y mejorar tus relaciones, para ofrecer un cuidado más compasivo y efectivo.
+            </p>
+            <div class="mt-6 flex flex-wrap gap-2">
+              <button class="btn btn-primary focus-ring" id="btnGoNext" type="button">Abrir lección actual</button>
+              <button class="btn focus-ring" id="btnGoReview" type="button">Ir a repaso</button>
+            </div>
+          </div>
+
+          <div class="w-full md:w-[360px]">
+            <div class="card p-4">
+              <h3 class="serif text-lg">Tu progreso</h3>
+              <div class="mt-3 text-sm" style="color: var(--muted);">
+                Mantén un ritmo pequeño y sostenible. Una práctica breve y constante vence a la perfección.
+              </div>
+              <div class="mt-4 grid grid-cols-2 gap-2">
+                <div class="card p-3" style="box-shadow:none;">
+                  <div class="text-xs" style="color: var(--muted);">Lecciones</div>
+                  <div class="text-lg serif">${completionCount()}/${COURSE.lessons.length}</div>
+                </div>
+                <div class="card p-3" style="box-shadow:none;">
+                  <div class="text-xs" style="color: var(--muted);">XP</div>
+                  <div class="text-lg serif">${state.xp || 0}</div>
+                </div>
+              </div>
+              <div class="mt-4">
+                <canvas id="progressChart" height="120" aria-label="Gráfico de progreso" role="img"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      $("#btnGoNext").addEventListener("click", () => openLesson(state.lastLesson || 1));
+      $("#btnGoReview").addEventListener("click", () => openReview());
+
+      // chart (optional)
+      try{
+        const ctx = $("#progressChart");
+        const done = completionCount();
+        const left = COURSE.lessons.length - done;
+        new Chart(ctx, {
+          type: "doughnut",
+          data: {
+            labels: ["Completado", "Pendiente"],
+            datasets: [{ data: [done, left] }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: false },
+              tooltip: { enabled: true }
+            },
+            cutout: "70%"
+          }
+        });
+      }catch(e){ /* ignore */ }
+    }
+
+    function renderLesson(id){
+      const L = COURSE.lessons.find(x => x.id === id);
+      if(!L){ renderWelcome(); return; }
+
+      const subtitle = L.deckTitle ? `<div class="text-sm mt-1" style="color: var(--muted);">${escapeHTML(L.deckTitle)}</div>` : "";
+      const status = lessonStatus(id);
+      const canComplete = (status !== "locked");
+
+      let bodyHtml = "";
+      if(L.sections){
+        bodyHtml = L.sections.map(s => renderSection(s)).join("");
+      }
+      if(L.exercises){
+        bodyHtml = renderExercises(L.exercises);
+      }
+      if(L.quiz){
+        bodyHtml = renderQuiz(L.quiz);
+      }
+
+      const ritualCta = (id >= 2) ? `
+        <div class="card p-4" style="box-shadow:none;">
+          <div class="serif text-base">Tu ritual</div>
+          <div class="text-sm mt-1" style="color: var(--muted);">${id === 2 ? "Cuando termines esta lección, empieza tu Ritual de 21 días. Después, vuelve cuando quieras al curso." : "Si te apetece, vuelve a tu Ritual de 21 días. La teoría se integra cuando se practica."}</div>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <button class="btn btn-primary focus-ring" id="btnOpenRitual" type="button">Ir al ritual</button>
+          </div>
+        </div>
+      ` : "";
+
+      const completeBtn = (id !== 6) ? `
+        <button class="btn btn-primary focus-ring" id="btnCompleteLesson" type="button">
+          Marcar como completada
+        </button>` : "";
+
+      const nextBtn = (id < 6) ? `
+        <button class="btn focus-ring" id="btnNextLesson" type="button">
+          Siguiente lección
+        </button>` : "";
+
+      const backBtn = `
+        <button class="btn focus-ring" id="btnBackHome" type="button">
+          Volver al mapa
+        </button>`;
+
+      $("#panel").innerHTML = `
+        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+          <div>
+            <div class="text-xs tracking-wide" style="color: var(--muted);">Lección ${escapeHTML(L.code)}</div>
+            <h2 class="serif text-2xl">${escapeHTML(L.title)}</h2>
+            ${subtitle}
+          </div>
+          <div class="flex flex-wrap gap-2">
+            ${backBtn}
+            <button class="btn focus-ring" id="btnOpenReviewInline" type="button">Repaso</button>
+            ${nextBtn}
+            ${completeBtn}
+          </div>
+        </div>
+
+        <div class="mt-5 space-y-5">
+          ${bodyHtml}
+          ${ritualCta}
+        </div>
+
+        <div class="mt-6 card p-4" style="box-shadow:none;">
+          <div class="text-sm serif">Nota</div>
+          <div class="text-sm mt-1" style="color: var(--muted);">${escapeHTML(L.completeHint || "Cuando te sientas lista, marca la lección como completada.")}</div>
+        </div>
+      `;
+
+      $("#btnBackHome").addEventListener("click", () => renderWelcome());
+      $("#btnOpenReviewInline").addEventListener("click", openReview);
+
+      if($("#btnNextLesson")){
+        $("#btnNextLesson").addEventListener("click", () => {
+          const next = id + 1;
+          if(lessonUnlocked(next)) openLesson(next);
+          else{
+            // gentle nudge
+            toast("Completa la lección actual para desbloquear la siguiente.");
+          }
+        });
+      }
+
+      if($("#btnCompleteLesson")){
+        $("#btnCompleteLesson").addEventListener("click", () => {
+          // For lesson 4, ensure all exercises done
+          if(id === 4){
+            const allDone = COURSE.lessons[3].exercises.every(ex => !!state.completedExercises[ex.id]);
+            if(!allDone){
+              toast("Completa los tres ejercicios para marcar esta lección como terminada.");
+              return;
+            }
+          }
+          markLessonComplete(id);
+          toast("Lección completada. Continúa cuando quieras.");
+          // Unlock next automatically
+          if(id < 6) renderPath();
+        });
+      }
+
+      // attach exercise handlers
+      if(id === 4){
+        wireExercises();
+      }
+      // ritual CTA
+      if($("#btnOpenRitual")){
+        $("#btnOpenRitual").addEventListener("click", () => openRitual(id));
+      }
+
+      // attach quiz handlers
+      if(id === 6){
+        wireQuiz();
+      }
+    }
+
+    function renderSection(s){
+      const heading = s.heading ? `<h3 class="serif text-lg">${escapeHTML(s.heading)}</h3>` : "";
+      const body = (s.body || []).map(p => `<p class="text-base leading-relaxed">${escapeHTML(p)}</p>`).join("");
+      const bullets = (s.bullets || []).map(b => `<li class="leading-relaxed">${escapeHTML(b)}</li>`).join("");
+      const listItems = (s.list || []).map(item => `
+        <div class="card p-4" style="box-shadow:none;">
+          <div class="serif text-base">${escapeHTML(item.title)}</div>
+          <div class="text-sm mt-1 leading-relaxed" style="color: var(--muted);">${escapeHTML(item.text)}</div>
+        </div>
+      `).join("");
+
+      return `
+        <div class="space-y-3">
+          ${heading}
+          ${body}
+          ${bullets ? `<ul class="list-disc pl-5 space-y-2 text-sm" style="color: var(--muted);">${bullets}</ul>` : ""}
+          ${listItems}
+        </div>
+      `;
+    }
+
+    function renderExercises(exercises){
+      return `
+        <div class="space-y-4">
+          <h3 class="serif text-lg">Ejercicios prácticos</h3>
+          <p class="text-sm" style="color: var(--muted);">
+            Marca cada ejercicio como hecho. Puedes escribir respuestas para ti: se guardan en tu dispositivo.
+          </p>
+          ${exercises.map(ex => {
+            const done = !!state.completedExercises[ex.id];
+            const timer = ex.timerSeconds ? `
+              <div class="mt-3 flex flex-wrap items-center gap-2">
+                <button class="btn focus-ring" type="button" data-timer-start="${ex.id}">Iniciar temporizador (2 min)</button>
+                <span class="text-xs" style="color: var(--muted);" id="timerLabel-${ex.id}">Listo para empezar</span>
+              </div>` : "";
+
+            const fields = (ex.fields || []).map(f => {
+              const val = state.exerciseNotes[f.id] || "";
+              return `
+                <label class="block mt-3">
+                  <span class="text-xs" style="color: var(--muted);">${escapeHTML(f.label)}</span>
+                  <input class="mt-1 w-full btn focus-ring" style="padding: 10px 12px;" data-field="${ex.id}:${f.id}" value="${escapeAttr(val)}" placeholder="${escapeAttr(f.placeholder || "")}" />
+                </label>
+              `;
+            }).join("");
+
+            return `
+              <div class="card p-4" style="box-shadow:none;">
+                <div class="flex items-start justify-between gap-3">
+                  <div>
+                    <div class="serif text-base">${escapeHTML(ex.title)}</div>
+                    <div class="text-sm mt-1 leading-relaxed" style="color: var(--muted);">${escapeHTML(ex.prompt)}</div>
+                  </div>
+                  <button class="btn btn-primary focus-ring" type="button" data-ex-done="${ex.id}" aria-label="Marcar ejercicio como hecho">
+                    ${done ? "Hecho" : "Marcar hecho"}
+                  </button>
+                </div>
+                ${timer}
+                ${fields}
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `;
+    }
+
+    function wireExercises(){
+      // save fields on input
+      $$("[data-field]").forEach(inp => {
+        inp.addEventListener("input", (e) => {
+          const key = e.target.getAttribute("data-field"); // exId:fieldId
+          const parts = key.split(":");
+          const fieldId = parts[1];
+          state.exerciseNotes[fieldId] = e.target.value;
+          saveState();
+        });
+      });
+
+      // mark done
+      $$("[data-ex-done]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const exId = btn.getAttribute("data-ex-done");
+          if(!state.completedExercises[exId]){
+            state.completedExercises[exId] = true;
+            addXP(5);
+            saveState();
+          }
+          btn.textContent = "Hecho";
+          toast("Ejercicio guardado como hecho.");
+        });
+      });
+
+      // timers
+      $$("[data-timer-start]").forEach(btn => {
+        btn.addEventListener("click", () => startTimer(btn.getAttribute("data-timer-start")));
+      });
+    }
+
+    let timerInterval = null;
+    function startTimer(exId){
+      if(timerInterval) clearInterval(timerInterval);
+      const label = $("#timerLabel-"+exId);
+      let remaining = 120;
+      label.textContent = "Temporizador en marcha: 2:00";
+      timerInterval = setInterval(() => {
+        remaining -= 1;
+        const mm = Math.floor(remaining / 60);
+        const ss = String(remaining % 60).padStart(2,"0");
+        label.textContent = `Temporizador en marcha: ${mm}:${ss}`;
+        if(remaining <= 0){
+          clearInterval(timerInterval);
+          timerInterval = null;
+          label.textContent = "Temporizador terminado. Escribe una frase sobre cómo te sientes.";
+          toast("Temporizador terminado.");
+        }
+      }, 1000);
+    }
+
+    function renderQuiz(quiz){
+      const answered = Object.keys(state.quizAnswers || {}).length;
+      const total = quiz.length;
+      const score = computeQuizScore(quiz);
+      const showSummary = answered === total;
+
+      return `
+        <div class="space-y-4">
+          <h3 class="serif text-lg">Prueba</h3>
+          <p class="text-sm" style="color: var(--muted);">
+            Responde las seis preguntas. Recibirás feedback inmediato. Puedes reintentar.
+          </p>
+
+          <div class="card p-4" style="box-shadow:none;">
+            <div class="flex items-center justify-between gap-3">
+              <div class="text-sm" style="color: var(--muted);">Progreso</div>
+              <div class="text-sm serif">${answered}/${total}</div>
+            </div>
+            <div class="h-2 rounded-full progress-rail mt-2 overflow-hidden" aria-hidden="true">
+              <div class="h-2 rounded-full progress-fill" style="width:${Math.round((answered/total)*100)}%"></div>
+            </div>
+            ${showSummary ? `
+              <div class="mt-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div>
+                  <div class="serif text-base">Resultado</div>
+                  <div class="text-sm" style="color: var(--muted);">Aciertos: ${score.correct}/${total}</div>
+                </div>
+                <div class="flex gap-2">
+                  <button class="btn focus-ring" type="button" id="btnQuizRetryAll">Reintentar</button>
+                  <button class="btn btn-primary focus-ring" type="button" id="btnQuizFinish">Finalizar curso</button>
+                </div>
+              </div>
+            ` : ""}
+          </div>
+
+          <div class="space-y-4" id="quizWrap">
+            ${quiz.map((q, idx) => renderQuestion(q, idx, quiz)).join("")}
+          </div>
+
+          <div class="card p-4 hidden" id="encourageBox" style="box-shadow:none;">
+            <div class="serif text-base">Un momento</div>
+            <div class="text-sm mt-1" style="color: var(--muted);" id="encourageText"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderQuestion(q, idx, quiz){
+      const answered = (state.quizAnswers && (q.id in state.quizAnswers));
+      const chosen = answered ? state.quizAnswers[q.id] : null;
+
+      // If answered, compute correctness
+      const correct = answered && (Number(chosen) === q.correctIndex);
+
+      const choices = q.options.map((opt, i) => {
+        let cls = "choice focus-ring";
+        let pressed = "false";
+        if(answered && Number(chosen) === i){
+          pressed = "true";
+          cls += " aria-pressed";
+          if(correct) cls += " correct";
+          else cls += " incorrect";
+        }
+        // Highlight correct option after answer (subtle)
+        let extra = "";
+        if(answered && i === q.correctIndex){
+          extra = ' data-correct="true"';
+        }
+        return `
+          <button class="${cls}" type="button" data-q="${q.id}" data-i="${i}" aria-pressed="${pressed}" ${answered ? "disabled" : ""}${extra}>
+            ${escapeHTML(opt)}
+          </button>
+        `;
+      }).join("");
+
+      const explain = answered ? `
+        <div class="mt-3 text-sm" style="color: var(--muted);">
+          <span class="serif">${correct ? "Correcto." : "Incorrecto."}</span>
+          ${escapeHTML(q.explain || "")}
+        </div>
+      ` : "";
+
+      const retryBtn = answered ? `<button class="btn focus-ring mt-3" type="button" data-q-retry="${q.id}">Reintentar esta pregunta</button>` : "";
+
+      return `
+        <div class="card p-4" style="box-shadow:none;">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="text-xs" style="color: var(--muted);">Pregunta ${idx+1}/${quiz.length}</div>
+              <div class="serif text-base mt-1">${escapeHTML(q.question)}</div>
+            </div>
+          </div>
+          <div class="mt-3 grid gap-2">
+            ${choices}
+          </div>
+          ${explain}
+          ${retryBtn}
+        </div>
+      `;
+    }
+
+    function wireQuiz(){
+      // click answers
+      $$("#quizWrap button[data-q]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const qid = btn.getAttribute("data-q");
+          const idx = Number(btn.getAttribute("data-i"));
+          answerQuestion(qid, idx);
+        });
+      });
+
+      // retry per question
+      $$("#quizWrap [data-q-retry]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const qid = btn.getAttribute("data-q-retry");
+          delete state.quizAnswers[qid];
+          saveState();
+          // rerender quiz
+          renderLesson(6);
+        });
+      });
+
+      // retry all / finish
+      const retryAll = $("#btnQuizRetryAll");
+      if(retryAll){
+        retryAll.addEventListener("click", () => {
+          state.quizAnswers = {};
+          state.sessionWrongCount = 0;
+          saveState();
+          renderLesson(6);
+        });
+      }
+
+      const finish = $("#btnQuizFinish");
+      if(finish){
+        finish.addEventListener("click", () => finishCourse());
+      }
+    }
+
+    function computeQuizScore(quiz){
+      let correct = 0;
+      for(const q of quiz){
+        const ans = state.quizAnswers[q.id];
+        if(ans === undefined) continue;
+        if(Number(ans) === q.correctIndex) correct += 1;
+      }
+      return { correct };
+    }
+
+    function answerQuestion(qid, chosenIndex){
+      const quiz = COURSE.lessons[5].quiz;
+      const q = quiz.find(x => x.id === qid);
+      if(!q) return;
+
+      state.quizAnswers[qid] = chosenIndex;
+
+      const ok = Number(chosenIndex) === q.correctIndex;
+      if(!ok){
+        state.sessionWrongCount = (state.sessionWrongCount || 0) + 1;
+        // register missed for review
+        state.missedQuiz[qid] = state.missedQuiz[qid] || { misses: 0, lastMissDate: null, selectedIndices: [] };
+        state.missedQuiz[qid].misses += 1;
+        state.missedQuiz[qid].lastMissDate = todayKey();
+        if(!state.missedQuiz[qid].selectedIndices.includes(chosenIndex)){
+          state.missedQuiz[qid].selectedIndices.push(chosenIndex);
+        }
+        saveState();
+
+        // encouragement if repeated wrongs
+        if(state.sessionWrongCount >= 2){
+          showEncouragement();
+        }
+      }else{
+        // if correct after misses, keep in review until user clears (optional). We'll keep but mark as solvable.
+        saveState();
+      }
+
+      // XP per correct answer (discreet)
+      if(ok) addXP(3);
+
+      // rerender quiz
+      renderLesson(6);
+    }
+
+    function showEncouragement(){
+      const box = $("#encourageBox");
+      const text = $("#encourageText");
+      if(!box || !text) return;
+      const msg = COURSE.encouragement[Math.floor(Math.random() * COURSE.encouragement.length)];
+      text.textContent = msg;
+      box.classList.remove("hidden");
+    }
+
+    function finishCourse(){
+      const quiz = COURSE.lessons[5].quiz;
+      const score = computeQuizScore(quiz).correct;
+      const total = quiz.length;
+
+      // require passing threshold (>=4)
+      if(score < 4){
+        toast("Para finalizar, intenta lograr al menos 4 aciertos.");
+        return;
+      }
+
+      markLessonComplete(6);
+
+      // also mark lessons 1-5 if user skipped (gentle; but only if unlocked)
+      for(let i=1;i<=5;i++){
+        if(!state.completedLessons[i]) state.completedLessons[i] = true;
+      }
+
+      // badge (stored implicitly by completions)
+      saveState();
+      renderHeader();
+      renderPath();
+
+      $("#panel").innerHTML = `
+        <div class="text-center">
+          <div class="text-xs tracking-wide" style="color: var(--muted);">Curso completado</div>
+          <h2 class="serif text-3xl mt-2">Mindfulness del Cuidado</h2>
+          <p class="text-base mt-3 leading-relaxed">
+            Has completado el recorrido principal. Si lo deseas, vuelve a repasar las preguntas falladas y revisa las secciones recomendadas.
+          </p>
+          <div class="mt-6 flex flex-wrap gap-2 justify-center">
+            <button class="btn btn-primary focus-ring" id="btnGoReview2" type="button">Ir a repaso</button>
+            <button class="btn btn-primary focus-ring" id="btnDownloadCertInline" type="button">Descargar certificado</button>
+            <button class="btn focus-ring" id="btnBackHome2" type="button">Volver al mapa</button>
+          </div>
+          <div class="mt-6 card p-4 inline-block" style="box-shadow:none;">
+            <div class="text-xs" style="color: var(--muted);">Badge</div>
+            <div class="serif text-lg mt-1">Curso completado</div>
+            <div class="text-sm mt-1" style="color: var(--muted);">Momentos con Blancanieves</div>
+          </div>
+        </div>
+      `;
+      $("#btnGoReview2").addEventListener("click", openReview);
+      $("#btnBackHome2").addEventListener("click", renderWelcome);
+      const inlineCert = document.getElementById("btnDownloadCertInline");
+      if(inlineCert){ inlineCert.addEventListener("click", () => document.getElementById("btnDownloadCert")?.click()); }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function openReview(){
+      renderReview();
+      $("#panelReview").classList.remove("hidden");
+      $("#panel").classList.add("hidden");
+      window.scrollTo({ top: $("#panelReview").offsetTop - 12, behavior: "smooth" });
+    }
+
+    function renderReview(){
+      const quiz = COURSE.lessons[5].quiz;
+      const missedIds = Object.keys(state.missedQuiz || {});
+      const items = missedIds.map(qid => quiz.find(q => q.id === qid)).filter(Boolean);
+
+      if(items.length === 0){
+        $("#reviewList").innerHTML = `
+          <div class="card p-4" style="box-shadow:none;">
+            <div class="serif text-base">Sin elementos pendientes</div>
+            <div class="text-sm mt-1" style="color: var(--muted);">Cuando falles una pregunta, aparecerá aquí para repasarla.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const recs = {
+        q1: [3],
+        q2: [1],
+        q3: [1],
+        q4: [3],
+        q5: [2],
+        q6: [3]
+      };
+
+      $("#reviewList").innerHTML = items.map(q => {
+        const m = state.missedQuiz[q.id] || { misses: 0 };
+        const rec = (recs[q.id] || []).map(n => `Lección ${String(n).padStart(2,"0")}`).join(", ");
+        return `
+          <div class="card p-4 mb-3" style="box-shadow:none;">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <div class="serif text-base">${escapeHTML(q.question)}</div>
+                <div class="text-sm mt-1" style="color: var(--muted);">Fallos registrados: ${m.misses || 0}</div>
+                <div class="text-sm mt-1" style="color: var(--muted);">Recomendación: ${escapeHTML(rec || "Revisar teoría")}</div>
+              </div>
+              <div class="flex flex-col gap-2">
+                <button class="btn focus-ring" type="button" data-open-lesson="${(recs[q.id]||[1])[0]}">Ir a lección</button>
+                <button class="btn btn-primary focus-ring" type="button" data-try-q="${q.id}">Practicar</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      $$("[data-open-lesson]").forEach(b => b.addEventListener("click", () => openLesson(b.getAttribute("data-open-lesson"))));
+      $$("[data-try-q]").forEach(b => b.addEventListener("click", () => {
+        // open lesson 6 and scroll to question
+        openLesson(6);
+        setTimeout(() => {
+          const qid = b.getAttribute("data-try-q");
+          const el = document.querySelector(`[data-q="${qid}"]`);
+          if(el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 250);
+      }));
+    }
+
+    // ======== Toast ========
+    let toastTimeout = null;
+    function toast(message){
+      const existing = document.getElementById("toast");
+      if(existing) existing.remove();
+      const el = document.createElement("div");
+      el.id = "toast";
+      el.className = "fixed bottom-4 left-1/2 -translate-x-1/2 card px-4 py-3 text-sm";
+      el.style.boxShadow = "var(--shadow)";
+      el.textContent = message;
+      document.body.appendChild(el);
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => el.remove(), 2800);
+    }
+
+    // ======== Vista imprimible del certificado (estable) ========
+    function openPrintOverlay(){
+      let overlay = document.getElementById("printOverlay");
+      if(!overlay){
+        overlay = document.createElement("div");
+        overlay.id = "printOverlay";
+        overlay.style.position = "fixed";
+        overlay.style.inset = "0";
+        overlay.style.zIndex = "9999";
+        overlay.style.background = "rgba(15,15,15,.55)";
+        overlay.style.display = "none";
+        overlay.style.alignItems = "center";
+        overlay.style.justifyContent = "center";
+        overlay.style.padding = "16px";
+
+        const panel = document.createElement("div");
+        panel.style.width = "min(980px, 100%)";
+        panel.style.maxHeight = "100%";
+        panel.style.overflow = "auto";
+        panel.style.background = "var(--card)";
+        panel.style.borderRadius = "18px";
+        panel.style.boxShadow = "var(--shadow)";
+
+        const bar = document.createElement("div");
+        bar.style.display = "flex";
+        bar.style.gap = "10px";
+        bar.style.justifyContent = "flex-end";
+        bar.style.padding = "12px 12px 0 12px";
+
+        const btnPrint = document.createElement("button");
+        btnPrint.className = "btn btn-primary focus-ring";
+        btnPrint.type = "button";
+        btnPrint.textContent = "Imprimir / Guardar PDF";
+        btnPrint.addEventListener("click", () => window.print());
+
+        const btnClose = document.createElement("button");
+        btnClose.className = "btn btn-ghost focus-ring";
+        btnClose.type = "button";
+        btnClose.textContent = "Cerrar";
+        btnClose.addEventListener("click", () => overlay.style.display = "none");
+
+        bar.appendChild(btnClose);
+        bar.appendChild(btnPrint);
+
+        const body = document.createElement("div");
+        body.id = "printOverlayBody";
+        body.style.padding = "12px 12px 18px 12px";
+
+        panel.appendChild(bar);
+        panel.appendChild(body);
+        overlay.appendChild(panel);
+        overlay.addEventListener("click", (e)=>{ if(e.target===overlay) overlay.style.display="none"; });
+
+        document.body.appendChild(overlay);
+
+        // Estilos de impresión: imprime solo el overlay
+        const st = document.createElement("style");
+        st.textContent = `          @page { size: A4; margin: 0; }
+          @media print{
+            html, body{ margin:0 !important; padding:0 !important; }
+            body *{ visibility:hidden !important; }
+            #printOverlay, #printOverlay *{ visibility:visible !important; }
+            #printOverlay{ position:fixed !important; inset:0 !important; background:#fff !important; padding:0 !important; }
+            #printOverlay > div{ box-shadow:none !important; border-radius:0 !important; width:100% !important; max-height:none !important; overflow:visible !important; }
+            #printOverlay .btn, #printOverlay button{ display:none !important; }
+            #printOverlayBody{ padding:0 !important; display:flex !important; justify-content:center !important; }
+            /* fuerza 1 sola página A4 */
+            #printOverlayBody .cert-page{
+              width:210mm !important;
+              height:297mm !important;
+              overflow:hidden !important;
+              page-break-inside:avoid !important;
+              break-inside:avoid !important;
+              box-shadow:none !important;
+              margin:0 !important;
+            }
+            /* evita que el navegador intente “reflow” raro */
+            #printOverlayBody .cert-page *{ max-width:100% !important; }
+          }
+        `;
+        document.head.appendChild(st);
+      }
+
+      // Monta el certificado bonito dentro del overlay
+      const mount = document.getElementById("printOverlayBody");
+      mount.innerHTML = "";
+      const page = document.querySelector("#certificateSheet .cert-page");
+      if(page){
+        const clone = page.cloneNode(true);
+        clone.style.margin = "0 auto";
+        mount.appendChild(clone);
+      }else{
+        mount.innerHTML = "<div style='padding:18px'>No encuentro la plantilla del certificado.</div>";
+      }
+
+      overlay.style.display = "flex";
+      // Subimos arriba por si el panel estaba scrolleado
+      setTimeout(()=>{ overlay.querySelector("div")?.scrollTo?.(0,0); }, 50);
+    }
+
+    // ======== Escapes ========
+    function escapeHTML(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+    function escapeAttr(str){
+      return escapeHTML(str).replaceAll("\n"," ");
+    }
+
+    // ======== Modal reset ========
+    function openResetModal(){
+      $("#modalBackdrop").classList.remove("hidden");
+      $("#modalWrap").classList.remove("hidden");
+      $("#modalWrap").classList.add("flex");
+      $("#modalBackdrop").setAttribute("aria-hidden","false");
+      $("#btnCancelReset").focus();
+    }
+    function closeResetModal(){
+      $("#modalBackdrop").classList.add("hidden");
+      $("#modalWrap").classList.add("hidden");
+      $("#modalWrap").classList.remove("flex");
+      $("#modalBackdrop").setAttribute("aria-hidden","true");
+      $("#btnReset").focus();
+    }
+    function doReset(){
+      state = defaultState();
+      saveState();
+      setTheme("light");
+      renderHeader();
+      renderPath();
+      renderWelcome();
+    updateCertUI();
+      closeResetModal();
+      toast("Progreso reiniciado.");
+    }
+
+    
+    const ACCESS_CODE = "McB-Alumnas-2026";
+    const ACCESS_STORAGE_KEY = "mcb_access_ok_v3";
+
+    function ensureCourseAccess(){
+      const gate = document.getElementById("courseAccessGate");
+      if(!gate) return;
+      if(localStorage.getItem(ACCESS_STORAGE_KEY) === "ok") return;
+      gate.style.display = "flex";
+      gate.setAttribute("aria-hidden", "false");
+    }
+
+    function grantCourseAccess(){
+      const gate = document.getElementById("courseAccessGate");
+      localStorage.setItem(ACCESS_STORAGE_KEY, "ok");
+      if(gate){
+        gate.style.display = "none";
+        gate.setAttribute("aria-hidden", "true");
+      }
+    }
+
+    // ======== Wire top-level ========
+    function wire(){
+      setTheme(state.theme || "light");
+      ensureCourseAccess();
+      const accessBtn = document.getElementById("courseAccessBtn");
+      const accessInput = document.getElementById("courseAccessInput");
+      const accessError = document.getElementById("courseAccessError");
+      const accessToggle = document.getElementById("courseAccessToggle");
+      if(accessToggle && accessInput){
+        accessToggle.addEventListener("click", () => {
+          const showing = accessInput.type === "text";
+          accessInput.type = showing ? "password" : "text";
+          accessToggle.textContent = showing ? "Mostrar" : "Ocultar";
+        });
+      }
+      if(accessBtn && accessInput){
+        accessBtn.addEventListener("click", () => {
+          const value = (accessInput.value || "").trim();
+          if(value !== ACCESS_CODE){
+            accessError.textContent = "La clave no es correcta.";
+            return;
+          }
+          accessError.textContent = "";
+          grantCourseAccess();
+        });
+        accessInput.addEventListener("keydown", (e) => { if(e.key === "Enter") accessBtn.click(); });
+      }
+      renderHeader();
+      renderPath();
+      renderWelcome();
+
+      $("#btnToggleTheme").addEventListener("click", toggleTheme);
+      $("#btnReset").addEventListener("click", openResetModal);
+      $("#btnRitual").addEventListener("click", () => openRitual(state.lastLesson || 1));
+      $("#btnCancelReset").addEventListener("click", closeResetModal);
+      $("#btnConfirmReset").addEventListener("click", doReset);
+      $("#modalBackdrop").addEventListener("click", closeResetModal);
+
+      $("#btnStart").addEventListener("click", () => openLesson(state.lastLesson || 1));
+      $("#btnReview").addEventListener("click", openReview);
+
+      // Certificado
+      const certBtn = document.getElementById("btnDownloadCert");
+      const certBackdrop = document.getElementById("certBackdrop");
+      const certNameInput = document.getElementById("certNameInput");
+      const btnCloseCert = document.getElementById("btnCloseCert");
+      const btnCancelCert = document.getElementById("btnCancelCert");
+      const btnConfirmCert = document.getElementById("btnConfirmCert");
+
+      
+/* ---- McB: Validación CERTIFICADO (sin tocar la lógica del curso) ---- */
+function ritualCompletionCountForCert(){
+  // Preferimos el contador real guardado por el ritual
+  if(state && typeof state.ritualDays === "number") return state.ritualDays;
+  // Fallback al método antiguo si existe
+  if(typeof ritualCompletionCount === "function") return ritualCompletionCount();
+  return 0;
+}
+function isCourseCompletedForCert(){
+  // Preferimos la lógica original si existe
+  if(typeof isCourseCompleted === "function") return isCourseCompleted();
+  // Fallback: si existe completedLessons, exigimos 6 (el curso tiene 6 lecciones)
+  const arr = (state && Array.isArray(state.completedLessons)) ? state.completedLessons : [];
+  return arr.length >= 6;
+}
+function isCertUnlocked(){
+  return isCourseCompletedForCert() && ritualCompletionCountForCert() >= 21;
+}
+
+function openCertModal(){
+  
+        
+        if(!isCertUnlocked()){
+          toast("Completa el método y el Ritual de 21 días (21/21) para descargar tu certificado.");
+          return;
+        }
+
+if(!state.completedAt){
+    state.completedAt = new Date().toISOString();
+  }
+  if(!state.certificateId){
+    let counter = parseInt(localStorage.getItem("mcbCertCounter") || "0", 10);
+    counter++;
+    localStorage.setItem("mcbCertCounter", String(counter));
+
+    const year = new Date(state.completedAt).getFullYear();
+    const padded = String(counter).padStart(4, "0");
+    state.certificateId = `McB-${year}-${padded}`;
+  }
+  saveState();
+  certBackdrop.style.display = "flex";
+  certNameInput.value = state.participantName || "";
+  setTimeout(() => certNameInput.focus(), 50);
+}
+      function closeCertModal(){
+        certBackdrop.style.display = "none";
+      }
+
+      if(certBtn){
+        certBtn.addEventListener("click", openCertModal);
+      }
+      if(btnCloseCert) btnCloseCert.addEventListener("click", closeCertModal);
+      if(btnCancelCert) btnCancelCert.addEventListener("click", closeCertModal);
+      if(certBackdrop){
+        certBackdrop.addEventListener("click", (e) => {
+          if(e.target === certBackdrop) closeCertModal();
+        });
+      }
+      if(btnConfirmCert){
+        btnConfirmCert.addEventListener("click", async () => {
+          const name = (certNameInput.value || "").trim();
+          if(!name){
+            toast("Escribe tu nombre para generar el certificado.");
+            certNameInput.focus();
+            return;
+          }
+          state.participantName = name;
+          saveState();
+          closeCertModal();
+          try{
+            toast("Generando certificado…");
+            await generateCertificatePDF(name);
+          }catch(err){
+            console.error(err);
+            toast("No pude generar el PDF. Prueba de nuevo.");
+          }
+        });
+      }
+
+      $("#btnCloseReview").addEventListener("click", () => {
+        $("#panelReview").classList.add("hidden");
+        $("#panel").classList.remove("hidden");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
+      // Path node clicks
+      $$(".path-node").forEach(n => {
+        n.addEventListener("click", () => {
+          const id = n.getAttribute("data-lesson");
+          openLesson(id);
+        });
+      });
+
+      // Keyboard shortcuts
+      document.addEventListener("keydown", (e) => {
+        if(e.key === "Escape"){
+          if(!$("#modalWrap").classList.contains("hidden")) closeResetModal();
+        }
+      });
+    }
+
+    wire();
+  </script>
+
+
+<template id="ritualSrcDoc">
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Método McB · 21 días para volver a ti · Momentos con Blancanieves</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root{
+      --bg: #fbfaf8;
+      --card: #ffffff;
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --line: #e7e2de;
+      --shadow: 0 10px 30px rgba(17, 24, 39, 0.06);
+      --focus: 0 0 0 3px rgba(126,154,138,0.35);
+    }
+    .dark{
+      --bg:#0f1416;
+      --card:#151b1d;
+      --ink:#e5e7eb;
+      --muted:#a1a1aa;
+      --line:#273034;
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+    html, body { height: 100%; }
+    body{
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    h1,h2,h3,.serif { font-family: Lora, Georgia, serif; }
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      border-radius: 18px;
+    }
+    .btn{
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      padding: 10px 12px;
+      transition: transform .05s ease, background .2s ease, border-color .2s ease;
+    }
+    .btn:hover{ border-color: rgba(181,140,149,0.45); }
+    .btn:active{ transform: translateY(1px); }
+    .btn-primary{
+      background: linear-gradient(135deg, rgba(181,140,149,0.22), rgba(126,154,138,0.18));
+      border-color: rgba(181,140,149,0.35);
+    }
+    .chip{
+      border: 1px solid var(--line);
+      background: rgba(181,140,149,0.09);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+    .focus-ring:focus{ outline: none; box-shadow: var(--focus); }
+    .subtle{ color: var(--muted); }
+    .divider{ height: 1px; background: var(--line); }
+    .step{
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 14px;
+      background: rgba(255,255,255,0.02);
+    }
+    .field{
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 12px;
+      background: var(--card);
+    }
+    .field:focus{ outline: none; box-shadow: var(--focus); }
+    .hint{ font-size: 12px; color: var(--muted); }
+    .grid-day{
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 0;
+      text-align: center;
+      background: var(--card);
+    }
+    .grid-day[data-state="done"]{
+      border-color: rgba(126,154,138,0.55);
+      background: linear-gradient(135deg, rgba(126,154,138,0.18), rgba(181,140,149,0.10));
+    }
+    .grid-day[data-state="current"]{
+      border-color: rgba(181,140,149,0.60);
+      background: rgba(181,140,149,0.10);
+    }
+    .grid-day[data-state="locked"]{ opacity: .55; cursor: not-allowed; }
+  </style>
+
+  <link rel="manifest" href="/mcB-volviendo-a-ti/manifest.json">
+  <meta name="theme-color" content="#c9b3a6">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Método McB">
+  <link rel="apple-touch-icon" href="/mcB-volviendo-a-ti/icon-192.png">
+</head>
+
+<body>
+  <header class="max-w-5xl mx-auto px-4 pt-6">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-2xl border" style="border-color: var(--line); background: linear-gradient(135deg, rgba(181,140,149,0.22), rgba(126,154,138,0.18));"></div>
+        <div>
+          <div class="text-xs tracking-wide subtle">Método</div>
+          <h1 class="text-xl md:text-2xl serif">McB · 21 días para volver a ti</h1>
+          <div class="text-sm subtle">Momentos con Blancanieves</div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="chip" id="chipDay">Día: 1/21</span>
+        <span class="chip" id="chipStreak">Racha: 0</span>
+        <button class="btn focus-ring" id="btnToggleTheme" type="button">Modo</button>
+        <button class="btn focus-ring" id="btnReset" type="button">Reiniciar</button>
+      </div>
+    </div>
+
+    <nav class="mt-5 card p-3 md:p-4">
+      <div class="flex flex-wrap gap-2">
+        <button class="btn btn-primary focus-ring" id="navHome" type="button">Inicio</button>
+        <button class="btn focus-ring" id="navToday" type="button">Hoy</button>
+        <button class="btn focus-ring" id="navProgress" type="button">Progreso</button>
+        <button class="btn focus-ring" id="navJourney" type="button">Mi recorrido</button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-8">
+    <section class="card p-5 md:p-7" id="panel"></section>
+  </main>
+
+  <div class="fixed inset-0 bg-black/40 hidden" id="backdrop"></div>
+
+  <div class="fixed inset-0 hidden items-center justify-center p-4" id="resetWrap" role="dialog" aria-modal="true">
+    <div class="card w-full max-w-lg p-5">
+      <h3 class="serif text-lg">Reiniciar</h3>
+      <p class="text-sm mt-2 subtle">Esto borrará tu progreso y tus textos en este dispositivo.</p>
+      <div class="mt-5 flex gap-2 justify-end">
+        <button class="btn focus-ring" id="btnCancelReset" type="button">Cancelar</button>
+        <button class="btn btn-primary focus-ring" id="btnConfirmReset" type="button">Reiniciar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "mcb_21_v1";
+
+    const PHRASES = [
+      "Hoy solo observo.",
+      "No necesito entenderlo todo.",
+      "Lo que siento no es un error.",
+      "Estoy aquí, conmigo.",
+      "Puedo mirar sin juzgar.",
+      "No huyo de mí.",
+      "Me permito estar.",
+      "Detrás de cada emoción hay una historia.",
+      "Me escucho con ternura.",
+      "No soy mi reacción.",
+      "Algo en mí quiere ser entendido.",
+      "Me hablo con respeto.",
+      "Puedo sostener lo que siento.",
+      "Me trato como trataría a alguien querido.",
+      "Hoy me pongo en primer lugar sin culpa.",
+      "Mi paz es prioridad.",
+      "Me respeto incluso cuando nadie mira.",
+      "Elijo lo que me hace bien.",
+      "No me resto valor.",
+      "Soy suficiente tal y como soy.",
+      "Hoy me elijo."
+    ];
+
+    function stageForDay(day){
+      if(day <= 7) return { name: "Me observo", idx: 1 };
+      if(day <= 14) return { name: "Me comprendo", idx: 2 };
+      return { name: "Me elijo", idx: 3 };
+    }
+
+    function questionsForDay(day){
+      const st = stageForDay(day).idx;
+      const bank1 = [
+        "¿Qué he sentido hoy con más intensidad?",
+        "¿Qué pensamiento ha aparecido varias veces?",
+        "¿En qué momento me he tensado?",
+        "¿Qué he evitado sentir?"
+      ];
+      const bank2 = [
+        "¿De dónde puede venir esto que siento?",
+        "¿Qué parte de mí está intentando protegerme?",
+        "¿Qué necesidad no atendida hay debajo?",
+        "¿Qué me diría si me hablara con ternura?"
+      ];
+      const bank3 = [
+        "¿Qué decisión pequeña he tomado a mi favor?",
+        "¿Dónde me he respetado hoy?",
+        "¿Qué límite he puesto, aunque sea interno?",
+        "¿Qué versión de mí estoy construyendo?"
+      ];
+      const bank = st === 1 ? bank1 : (st === 2 ? bank2 : bank3);
+      const i = (day - 1) % bank.length;
+      const j = (i + 2) % bank.length;
+      return [bank[i], bank[j]];
+    }
+
+    function todayKey(){
+      return new Date().toISOString().slice(0,10);
+    }
+
+    function defaultDay(day){
+      const qs = questionsForDay(day);
+      return {
+        day,
+        openedOn: null,
+        completedOn: null,
+        steps: {
+          walkDone: false,
+          grat1: "", grat2: "", grat3: "", gratSaved: false,
+          vizDone: false,
+          thanksPeople: "", thanksSaved: false,
+          intention: "", intentionSaved: false,
+          q1: qs[0], a1: "", q2: qs[1], a2: "", reflectionSaved: false,
+          progressLine: "", progressSaved: false
+        }
+      };
+    }
+
+    function defaultState(){
+      return {
+        theme: "light",
+        streak: 0,
+        lastActiveDate: null,
+        currentDay: 1,
+        days: Array.from({length: 21}, (_,i) => defaultDay(i+1))
+      };
+    }
+
+    let state = loadState();
+
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return defaultState();
+        const parsed = JSON.parse(raw);
+        const base = defaultState();
+        const s = { ...base, ...parsed };
+        if(!Array.isArray(s.days) || s.days.length !== 21) s.days = base.days;
+
+        s.days = s.days.map((d, idx) => {
+          const dayNum = idx + 1;
+          const baseDay = defaultDay(dayNum);
+          const merged = { ...baseDay, ...d, steps: { ...baseDay.steps, ...(d.steps || {}) } };
+          const qs = questionsForDay(dayNum);
+          merged.steps.q1 = qs[0];
+          merged.steps.q2 = qs[1];
+          return merged;
+        });
+
+        return s;
+      }catch(e){
+        return defaultState();
+      }
+    }
+
+    function saveState(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    const $ = (sel) => document.querySelector(sel);
+
+    function setTheme(theme){
+      state.theme = theme;
+      document.documentElement.classList.toggle("dark", theme === "dark");
+      saveState();
+      renderHeader();
+    }
+
+    function toggleTheme(){
+      setTheme(state.theme === "dark" ? "light" : "dark");
+    }
+
+    function incrementStreakIfNeeded(){
+      const t = todayKey();
+      if(state.lastActiveDate === t) return;
+      if(state.lastActiveDate){
+        const last = new Date(state.lastActiveDate + "T00:00:00");
+        const now = new Date(t + "T00:00:00");
+        const diffDays = Math.round((now - last) / 86400000);
+        state.streak = (diffDays === 1) ? (state.streak + 1) : 1;
+      }else{
+        state.streak = 1;
+      }
+      state.lastActiveDate = t;
+      saveState();
+    }
+
+    function completedCount(){
+      return state.days.filter(d => !!d.completedOn).length;
+    }
+
+    function maxUnlockedDay(){
+      return Math.min(21, completedCount() + 1);
+    }
+
+    function isDayUnlocked(day){
+      return day <= maxUnlockedDay();
+    }
+
+    function isDayEditable(dayObj){
+      if(!dayObj.completedOn) return true;
+      return dayObj.completedOn === todayKey();
+    }
+
+    function renderHeader(){
+      $("#chipDay").textContent = `Día: ${state.currentDay}/21`;
+      $("#chipStreak").textContent = `Racha: ${state.streak || 0}`;
+      $("#btnToggleTheme").textContent = (state.theme === "dark") ? "Claro" : "Oscuro";
+    }
+
+    function escapeHTML(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    let toastTimeout = null;
+    function toast(message){
+      const existing = document.getElementById("toast");
+      if(existing) existing.remove();
+      const el = document.createElement("div");
+      el.id = "toast";
+      el.className = "fixed bottom-4 left-1/2 -translate-x-1/2 card px-4 py-3 text-sm";
+      el.style.boxShadow = "var(--shadow)";
+      el.textContent = message;
+      document.body.appendChild(el);
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => el.remove(), 2800);
+    }
+
+    function openBackdrop(){ $("#backdrop").classList.remove("hidden"); }
+    function closeBackdrop(){ $("#backdrop").classList.add("hidden"); }
+
+    function openResetModal(){
+      openBackdrop();
+      $("#resetWrap").classList.remove("hidden");
+      $("#resetWrap").classList.add("flex");
+    }
+    function closeResetModal(){
+      $("#resetWrap").classList.add("hidden");
+      $("#resetWrap").classList.remove("flex");
+      closeBackdrop();
+    }
+    function doReset(){
+      state = defaultState();
+      saveState();
+      setTheme("light");
+      incrementStreakIfNeeded();
+      renderHome();
+      closeResetModal();
+      toast("Reiniciado.");
+    }
+
+    function dayTitle(day){
+      const st = stageForDay(day);
+      return `Día ${day} · Etapa ${st.idx} — ${st.name}`;
+    }
+
+    function renderHome(){
+      incrementStreakIfNeeded();
+      const unlocked = maxUnlockedDay();
+      const done = completedCount();
+      const pct = Math.round((done / 21) * 100);
+      const allDone = (done === 21);
+
+      $("#panel").innerHTML = `
+        <div class="max-w-3xl">
+          <div class="text-xs tracking-wide subtle">Ritual</div>
+          <h2 class="serif text-2xl md:text-3xl">21 días para volver a ti</h2>
+          <p class="text-sm mt-2 subtle">Estructura estable. Acompañamiento paso a paso. Progreso guardado en tu dispositivo.</p>
+
+          <div class="mt-6 grid md:grid-cols-3 gap-3">
+            <div class="card p-4" style="box-shadow:none;">
+              <div class="serif">Tu día</div>
+              <div class="text-3xl mt-1">${unlocked}</div>
+              <div class="hint mt-1">Día disponible</div>
+            </div>
+            <div class="card p-4" style="box-shadow:none;">
+              <div class="serif">Progreso</div>
+              <div class="text-3xl mt-1">${done}/21</div>
+              <div class="hint mt-1">${pct}% completado</div>
+            </div>
+            <div class="card p-4" style="box-shadow:none;">
+              <div class="serif">Regla del ritual</div>
+              <div class="text-sm mt-2 subtle">Puedes editar el mismo día. Desde el día siguiente, solo lectura.</div>
+            </div>
+          </div>
+
+          <div class="mt-6 flex flex-wrap gap-2">
+            <button class="btn btn-primary focus-ring" id="btnGoToday" type="button">Continuar</button>
+            <button class="btn focus-ring" id="btnGoProgress" type="button">Ver progreso</button>
+            <button class="btn focus-ring" id="btnGoJourney" type="button">Mi recorrido</button>
+          </div>
+
+          <div class="mt-6 divider"></div>
+
+          <div class="mt-5 card p-4" style="box-shadow:none;">
+            <div class="serif text-base">Cierre del día 21</div>
+            <p class="text-sm mt-2 subtle">Nunca estuve perdida. Hoy me perdono. Y me elijo.</p>
+
+            <div class="mt-4 ${allDone ? "" : "hidden"}" id="finalWrapHome">
+              <div class="p-6 md:p-7 rounded-2xl border-2 text-center"
+                   style="background: linear-gradient(135deg, rgba(181,140,149,0.18), rgba(126,154,138,0.18));
+                          border-color: rgba(181,140,149,0.55);
+                          box-shadow: 0 12px 35px rgba(0,0,0,0.08);">
+                <div class="serif text-2xl md:text-3xl leading-relaxed">
+                  Nunca estuve perdida.<br/>
+                  Hoy me perdono.<br/>
+                  Y me elijo.
+                </div>
+              </div>
+            </div>
+          </div>
+      `;
+
+      $("#btnGoToday").addEventListener("click", () => openDay(unlocked));
+      $("#btnGoProgress").addEventListener("click", renderProgress);
+      $("#btnGoJourney").addEventListener("click", renderJourney);
+    }
+
+    function stepState(dayObj){
+      const s = dayObj.steps;
+      return {
+        walk: !!s.walkDone,
+        grat: !!s.gratSaved && (s.grat1.trim() && s.grat2.trim() && s.grat3.trim()),
+        viz: !!s.vizDone,
+        thanks: !!s.thanksSaved,
+        intent: !!s.intentionSaved && s.intention.trim().length > 1,
+        refl: !!s.reflectionSaved && ((s.a1||"").trim().length + (s.a2||"").trim().length) > 0,
+        prog: !!s.progressSaved && (s.progressLine||"").trim().length > 1
+      };
+    }
+
+    function currentStepIndex(dayObj){
+      const st = stepState(dayObj);
+      if(!st.walk) return 1;
+      if(!st.grat) return 2;
+      if(!st.viz) return 3;
+      if(!st.thanks) return 4;
+      if(!st.intent) return 5;
+      if(!st.refl) return 6;
+      if(!st.prog) return 7;
+      return 8;
+    }
+
+    function openDay(day){
+      if(!isDayUnlocked(day)){
+        toast("Ese día aún no está disponible.");
+        return;
+      }
+      state.currentDay = day;
+      incrementStreakIfNeeded();
+      saveState();
+      renderDay(day);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderDay(day){
+      const dayObj = state.days[day - 1];
+      const st = stageForDay(day);
+      const phrase = PHRASES[day - 1];
+      const editable = isDayEditable(dayObj);
+      const nowKey = todayKey();
+
+      if(!dayObj.openedOn) dayObj.openedOn = nowKey;
+      saveState();
+
+      const s = dayObj.steps;
+      const stepIdx = currentStepIndex(dayObj);
+      const done = !!dayObj.completedOn;
+
+      const lockNote = done
+        ? (editable ? "Puedes editar hoy. Mañana quedará solo lectura." : "Día sellado. Solo lectura.")
+        : "Escribe con calma. Paso a paso.";
+
+      $("#panel").innerHTML = `
+        <div class="max-w-3xl mx-auto">
+          <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+            <div>
+              <div class="text-xs tracking-wide subtle">${escapeHTML(dayTitle(day))}</div>
+              <h2 class="serif text-2xl mt-1">Día ${day}</h2>
+              <p class="text-sm mt-2 subtle">${escapeHTML(phrase)}</p>
+              <p class="text-xs mt-3 subtle">${escapeHTML(lockNote)}</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button class="btn focus-ring" id="btnBackHome" type="button">Volver</button>
+              <button class="btn focus-ring" id="btnGoProgress2" type="button">Progreso</button>
+              <button class="btn focus-ring" id="btnGoJourney2" type="button">Mi recorrido</button>
+            </div>
+          </div>
+
+          <div class="mt-5 space-y-3" id="stepsWrap"></div>
+
+          <div class="mt-6 flex items-center justify-between">
+            <div class="text-xs subtle">Etapa ${st.idx}: ${escapeHTML(st.name)}</div>
+            <div class="text-xs subtle">Paso ${Math.min(stepIdx,7)}/7</div>
+          </div>
+
+          <div class="mt-3 divider"></div>
+
+          <div class="mt-4 ${stepIdx >= 8 ? "" : "hidden"}" id="closeWrap">
+            <div class="step">
+              <div class="serif text-lg">Cierre</div>
+              <p class="text-sm mt-2 subtle">Cuando cierres el día, quedará completado. Podrás editarlo hoy. A partir de mañana será solo lectura.</p>
+              <div class="mt-3 flex justify-end gap-2">
+                <button class="btn btn-primary focus-ring" id="btnCloseDay" type="button" ${done ? "disabled" : ""}>Cerrar día</button>
+              </div>
+              <div class="mt-3 text-sm subtle ${done ? "" : "hidden"}" id="doneMsg">Hoy te has elegido.</div>
+            </div>
+          </div>
+
+          <div class="mt-6 ${day === 21 && done ? "" : "hidden"}" id="finalWrap">
+            <div class="card p-6 md:p-7" style="box-shadow:none;">
+              <div class="serif text-2xl text-center leading-relaxed">
+                Nunca estuve perdida.<br/>
+                Hoy me perdono.<br/>
+                Y me elijo.
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      $("#btnBackHome").addEventListener("click", renderHome);
+      $("#btnGoProgress2").addEventListener("click", renderProgress);
+      $("#btnGoJourney2").addEventListener("click", renderJourney);
+
+      renderSteps(dayObj, editable, stepIdx);
+
+      if($("#btnCloseDay")){
+        $("#btnCloseDay").addEventListener("click", () => closeDay(dayObj));
+      }
+      if(done){
+        const msg = document.getElementById("doneMsg");
+        if(msg) msg.classList.remove("hidden");
+      }
+    }
+
+    function renderSteps(dayObj, editable, stepIdx){
+      const wrap = $("#stepsWrap");
+      const s = dayObj.steps;
+      const qs = [s.q1, s.q2];
+
+      function stepCard(n, title, subtitle, contentHtml, actionHtml){
+        const visible = stepIdx >= n;
+        const readonly = (!editable);
+        return `
+          <div class="step ${visible ? "" : "hidden"}" data-step="${n}">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <div class="serif text-lg">${escapeHTML(title)}</div>
+                ${subtitle ? `<div class="text-sm mt-1 subtle">${escapeHTML(subtitle)}</div>` : ""}
+              </div>
+              <div class="chip">Paso ${n}</div>
+            </div>
+            <div class="mt-3 space-y-3">${contentHtml}</div>
+            ${actionHtml ? `<div class="mt-4 flex justify-end gap-2">${actionHtml}</div>` : ""}
+            ${readonly ? `<div class="mt-3 hint">Solo lectura.</div>` : ""}
+          </div>
+        `;
+      }
+
+      const dis = editable ? "" : "disabled";
+
+      const step1 = stepCard(
+        1,
+        "Paseo consciente",
+        "20–30 minutos",
+        `<label class="flex items-start gap-3">
+           <input id="walkDone" type="checkbox" class="mt-1" ${s.walkDone ? "checked" : ""} ${dis}/>
+           <span class="text-sm subtle">Camina sin auriculares. Observa sin juzgar. Vuelve a la respiración cuando te distraigas.</span>
+         </label>`,
+        editable ? `<button class="btn btn-primary focus-ring" id="btnWalkNext" type="button">Continuar</button>` : ""
+      );
+
+      const step2 = stepCard(
+        2,
+        "Diario de gratitud",
+        "Tres cosas",
+        `<div class="grid gap-2">
+           <input class="field focus-ring" id="grat1" ${dis} placeholder="1." value="${escapeHTML(s.grat1||"")}" />
+           <input class="field focus-ring" id="grat2" ${dis} placeholder="2." value="${escapeHTML(s.grat2||"")}" />
+           <input class="field focus-ring" id="grat3" ${dis} placeholder="3." value="${escapeHTML(s.grat3||"")}" />
+         </div>
+         <div class="hint">Para avanzar, guarda las tres.</div>`,
+        editable ? `<button class="btn focus-ring" id="btnSaveGrat" type="button">Guardar</button>
+                    <button class="btn btn-primary focus-ring" id="btnGratNext" type="button">Continuar</button>` : ""
+      );
+
+      const step3 = stepCard(
+        3,
+        "Visualización",
+        "5 minutos",
+        `<div class="text-sm subtle">
+           1 minuto: respiración lenta.<br/>
+           2 minutos: imagen interna serena.<br/>
+           1 minuto: frase consciente.<br/>
+           1 minuto: sensación corporal.
+         </div>
+         <div class="flex flex-wrap items-center gap-2">
+           <button class="btn focus-ring" id="btnTimer" type="button" ${dis}>Iniciar 5:00</button>
+           <span class="hint" id="timerLabel"></span>
+         </div>
+         <label class="flex items-start gap-3">
+           <input id="vizDone" type="checkbox" class="mt-1" ${s.vizDone ? "checked" : ""} ${dis}/>
+           <span class="text-sm subtle">He realizado la visualización.</span>
+         </label>`,
+        editable ? `<button class="btn btn-primary focus-ring" id="btnVizNext" type="button">Continuar</button>` : ""
+      );
+
+      const step4 = stepCard(
+        4,
+        "Personas a agradecer",
+        "Lista breve",
+        `<textarea class="field focus-ring" id="thanksPeople" ${dis} style="min-height:88px;" placeholder="Nombres, sin explicación.">${escapeHTML(s.thanksPeople||"")}</textarea>
+         <div class="hint">Puedes dejarlo vacío si hoy no te sale.</div>`,
+        editable ? `<button class="btn focus-ring" id="btnSaveThanks" type="button">Guardar</button>
+                    <button class="btn btn-primary focus-ring" id="btnThanksNext" type="button">Continuar</button>` : ""
+      );
+
+      const step5 = stepCard(
+        5,
+        "Intención del día",
+        "Una frase",
+        `<input class="field focus-ring" id="intention" ${dis} placeholder="Hoy me comprometo a..." value="${escapeHTML(s.intention||"")}" />
+         <div class="hint">Una frase breve. Con respeto.</div>`,
+        editable ? `<button class="btn focus-ring" id="btnSaveIntent" type="button">Guardar</button>
+                    <button class="btn btn-primary focus-ring" id="btnIntentNext" type="button">Continuar</button>` : ""
+      );
+
+      const step6 = stepCard(
+        6,
+        "Autoobservación",
+        "Responde sin juicio",
+        `<div class="space-y-3">
+          <div>
+            <div class="text-sm serif">${escapeHTML(qs[0])}</div>
+            <textarea class="field focus-ring mt-2" id="a1" ${dis} style="min-height:80px;" placeholder="Escribe lo esencial.">${escapeHTML(s.a1||"")}</textarea>
+          </div>
+          <div>
+            <div class="text-sm serif">${escapeHTML(qs[1])}</div>
+            <textarea class="field focus-ring mt-2" id="a2" ${dis} style="min-height:80px;" placeholder="Escribe lo esencial.">${escapeHTML(s.a2||"")}</textarea>
+          </div>
+         </div>
+         <div class="hint">Para avanzar, basta con responder al menos una.</div>`,
+        editable ? `<button class="btn focus-ring" id="btnSaveRefl" type="button">Guardar</button>
+                    <button class="btn btn-primary focus-ring" id="btnReflNext" type="button">Continuar</button>` : ""
+      );
+
+      const step7 = stepCard(
+        7,
+        "Reconozco mi progreso",
+        "Una sola línea",
+        `<input class="field focus-ring" id="progressLine" ${dis} placeholder="Hoy reconozco que..." value="${escapeHTML(s.progressLine||"")}" />`,
+        editable ? `<button class="btn focus-ring" id="btnSaveProg" type="button">Guardar</button>
+                    <button class="btn btn-primary focus-ring" id="btnProgNext" type="button">Continuar</button>` : ""
+      );
+
+      wrap.innerHTML = step1 + step2 + step3 + step4 + step5 + step6 + step7;
+
+      if(!editable) return;
+
+      const bindField = (id, key) => {
+        const el = document.getElementById(id);
+        if(!el) return;
+        el.addEventListener("input", () => {
+          s[key] = el.value;
+          saveState();
+        });
+      };
+
+      const walkDone = $("#walkDone");
+      if(walkDone){
+        walkDone.addEventListener("change", () => {
+          s.walkDone = !!walkDone.checked;
+          saveState();
+        });
+      }
+      const btnWalkNext = $("#btnWalkNext");
+      if(btnWalkNext){
+        btnWalkNext.addEventListener("click", () => {
+          if(!s.walkDone){ toast("Marca el paseo consciente primero."); return; }
+          toast("Bien. Vamos al siguiente paso.");
+          renderDay(dayObj.day);
+        });
+      }
+
+      bindField("grat1","grat1"); bindField("grat2","grat2"); bindField("grat3","grat3");
+      bindField("thanksPeople","thanksPeople");
+      bindField("intention","intention");
+      bindField("a1","a1"); bindField("a2","a2");
+      bindField("progressLine","progressLine");
+
+      const btnSaveGrat = $("#btnSaveGrat");
+      const btnGratNext = $("#btnGratNext");
+      if(btnSaveGrat){
+        btnSaveGrat.addEventListener("click", () => {
+          s.gratSaved = true;
+          saveState();
+          toast("Guardado.");
+        });
+      }
+      if(btnGratNext){
+        btnGratNext.addEventListener("click", () => {
+          s.gratSaved = true;
+          saveState();
+          if(!(s.grat1.trim() && s.grat2.trim() && s.grat3.trim())){
+            toast("Completa y guarda las tres gratitudes.");
+            return;
+          }
+          toast("Bien. Siguiente paso.");
+          renderDay(dayObj.day);
+        });
+      }
+
+      let timer = null;
+      let remaining = 0;
+      const timerLabel = $("#timerLabel");
+      const btnTimer = $("#btnTimer");
+      function setTimerLabel(){
+        if(!timerLabel) return;
+        if(!timer){ timerLabel.textContent = ""; return; }
+        const mm = String(Math.floor(remaining/60));
+        const ss = String(remaining%60).padStart(2,"0");
+        timerLabel.textContent = `${mm}:${ss}`;
+      }
+      if(btnTimer){
+        btnTimer.addEventListener("click", () => {
+          if(timer){
+            clearInterval(timer);
+            timer = null;
+            btnTimer.textContent = "Iniciar 5:00";
+            setTimerLabel();
+            return;
+          }
+          remaining = 300;
+          btnTimer.textContent = "Detener";
+          setTimerLabel();
+          timer = setInterval(() => {
+            remaining -= 1;
+            setTimerLabel();
+            if(remaining <= 0){
+              clearInterval(timer);
+              timer = null;
+              btnTimer.textContent = "Iniciar 5:00";
+              setTimerLabel();
+              toast("Tiempo.");
+            }
+          }, 1000);
+        });
+      }
+
+      const vizDone = $("#vizDone");
+      if(vizDone){
+        vizDone.addEventListener("change", () => {
+          s.vizDone = !!vizDone.checked;
+          saveState();
+        });
+      }
+      const btnVizNext = $("#btnVizNext");
+      if(btnVizNext){
+        btnVizNext.addEventListener("click", () => {
+          if(!s.vizDone){ toast("Marca la visualización como realizada."); return; }
+          toast("Seguimos.");
+          renderDay(dayObj.day);
+        });
+      }
+
+      const btnSaveThanks = $("#btnSaveThanks");
+      const btnThanksNext = $("#btnThanksNext");
+      if(btnSaveThanks){
+        btnSaveThanks.addEventListener("click", () => {
+          s.thanksSaved = true;
+          saveState();
+          toast("Guardado.");
+        });
+      }
+      if(btnThanksNext){
+        btnThanksNext.addEventListener("click", () => {
+          s.thanksSaved = true;
+          saveState();
+          toast("Seguimos.");
+          renderDay(dayObj.day);
+        });
+      }
+
+      const btnSaveIntent = $("#btnSaveIntent");
+      const btnIntentNext = $("#btnIntentNext");
+      if(btnSaveIntent){
+        btnSaveIntent.addEventListener("click", () => {
+          s.intentionSaved = true;
+          saveState();
+          toast("Guardado.");
+        });
+      }
+      if(btnIntentNext){
+        btnIntentNext.addEventListener("click", () => {
+          s.intentionSaved = true;
+          saveState();
+          if(s.intention.trim().length < 2){
+            toast("Escribe una intención breve.");
+            return;
+          }
+          toast("Seguimos.");
+          renderDay(dayObj.day);
+        });
+      }
+
+      const btnSaveRefl = $("#btnSaveRefl");
+      const btnReflNext = $("#btnReflNext");
+      if(btnSaveRefl){
+        btnSaveRefl.addEventListener("click", () => {
+          s.reflectionSaved = true;
+          saveState();
+          toast("Guardado.");
+        });
+      }
+      if(btnReflNext){
+        btnReflNext.addEventListener("click", () => {
+          s.reflectionSaved = true;
+          saveState();
+          if(((s.a1||"").trim().length + (s.a2||"").trim().length) < 1){
+            toast("Responde al menos una pregunta.");
+            return;
+          }
+          toast("Seguimos.");
+          renderDay(dayObj.day);
+        });
+      }
+
+      const btnSaveProg = $("#btnSaveProg");
+      const btnProgNext = $("#btnProgNext");
+      if(btnSaveProg){
+        btnSaveProg.addEventListener("click", () => {
+          s.progressSaved = true;
+          saveState();
+          toast("Guardado.");
+        });
+      }
+      if(btnProgNext){
+        btnProgNext.addEventListener("click", () => {
+          s.progressSaved = true;
+          saveState();
+          if((s.progressLine||"").trim().length < 2){
+            toast("Escribe una línea de progreso.");
+            return;
+          }
+          toast("Listo.");
+          renderDay(dayObj.day);
+        });
+      }
+    }
+
+    function closeDay(dayObj){
+      const idx = currentStepIndex(dayObj);
+      if(idx < 8){
+        toast("Completa los pasos antes de cerrar el día.");
+        return;
+      }
+      dayObj.completedOn = todayKey();
+      saveState();
+      toast("Día cerrado.");
+      renderDay(dayObj.day);
+    }
+
+    function renderProgress(){
+      incrementStreakIfNeeded();
+      const unlocked = maxUnlockedDay();
+      const done = completedCount();
+      const pct = Math.round((done / 21) * 100);
+      const allDone = (done === 21);
+
+      const daysHtml = state.days.map(d => {
+        const stateAttr = d.completedOn ? "done" : (d.day === unlocked ? "current" : (isDayUnlocked(d.day) ? "available" : "locked"));
+        const disabled = isDayUnlocked(d.day) ? "" : "disabled";
+        return `<button class="grid-day focus-ring" data-day="${d.day}" data-state="${stateAttr}" ${disabled} type="button">${String(d.day).padStart(2,"0")}</button>`;
+      }).join("");
+
+      $("#panel").innerHTML = `
+        <div class="max-w-3xl mx-auto">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <div class="text-xs tracking-wide subtle">Progreso</div>
+              <h2 class="serif text-2xl mt-1">${done}/21</h2>
+              <p class="text-sm mt-2 subtle">${pct}% completado</p>
+            </div>
+            <button class="btn focus-ring" id="btnBackHomeP" type="button">Volver</button>
+          </div>
+
+          <div class="mt-5 grid grid-cols-7 gap-2">${daysHtml}</div>
+
+          <div class="mt-5 card p-4" style="box-shadow:none;">
+            <div class="serif text-base">Notas</div>
+            <ul class="mt-2 text-sm subtle list-disc pl-5 space-y-1">
+              <li>Solo se desbloquea un día cada vez.</li>
+              <li>Editar es posible el mismo día. Desde el día siguiente, solo lectura.</li>
+              <li>Dentro del día, la práctica se abre paso a paso.</li>
+            </ul>
+          </div>
+        </div>
+      `;
+
+      $("#btnBackHomeP").addEventListener("click", renderHome);
+      document.querySelectorAll("[data-day]").forEach(btn => {
+        btn.addEventListener("click", () => openDay(Number(btn.getAttribute("data-day"))));
+      });
+    }
+
+    function renderJourney(){
+      incrementStreakIfNeeded();
+
+      const items = state.days
+        .filter(d => d.completedOn || d.steps.grat1 || d.steps.intention || d.steps.a1 || d.steps.a2 || d.steps.progressLine)
+        .map(d => {
+          const st = stageForDay(d.day);
+          const phrase = PHRASES[d.day - 1];
+          const stamp = d.completedOn ? `<div class="hint">Completado: ${formatDateES(d.completedOn)}</div>` : `<div class="hint">Borrador</div>`;
+
+          const s = d.steps;
+          const grat = [s.grat1, s.grat2, s.grat3]
+            .filter(x => (x||"").trim())
+            .map(x => `<li>${escapeHTML(x)}</li>`).join("");
+
+          const people = (s.thanksPeople||"").trim()
+            ? `<div class="mt-2"><div class="hint">Personas a agradecer</div><div class="text-sm subtle mt-1 whitespace-pre-wrap">${escapeHTML(s.thanksPeople)}</div></div>`
+            : "";
+
+          const intent = (s.intention||"").trim()
+            ? `<div class="mt-2"><div class="hint">Intención</div><div class="text-sm subtle mt-1">${escapeHTML(s.intention)}</div></div>`
+            : "";
+
+          const refl = ((s.a1||"").trim() || (s.a2||"").trim()) ? `
+            <div class="mt-3">
+              <div class="hint">Autoobservación</div>
+              <div class="mt-2 space-y-2">
+                ${(s.a1||"").trim() ? `<div><div class="text-sm serif">${escapeHTML(s.q1)}</div><div class="text-sm subtle mt-1 whitespace-pre-wrap">${escapeHTML(s.a1)}</div></div>` : ""}
+                ${(s.a2||"").trim() ? `<div><div class="text-sm serif">${escapeHTML(s.q2)}</div><div class="text-sm subtle mt-1 whitespace-pre-wrap">${escapeHTML(s.a2)}</div></div>` : ""}
+              </div>
+            </div>` : "";
+
+          const prog = (s.progressLine||"").trim()
+            ? `<div class="mt-3"><div class="hint">Progreso</div><div class="text-sm subtle mt-1">${escapeHTML(s.progressLine)}</div></div>`
+            : "";
+
+          return `
+            <div class="card p-5" style="box-shadow:none;">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <div class="text-xs tracking-wide subtle">Día ${d.day} · Etapa ${st.idx} — ${escapeHTML(st.name)}</div>
+                  <div class="serif text-lg mt-1">${escapeHTML(phrase)}</div>
+                  ${stamp}
+                </div>
+                <button class="btn focus-ring" data-open-day="${d.day}" type="button">Abrir</button>
+              </div>
+
+              ${grat ? `<div class="mt-3"><div class="hint">Gratitud</div><ul class="mt-1 text-sm subtle list-disc pl-5 space-y-1">${grat}</ul></div>` : ""}
+              ${people}
+              ${intent}
+              ${refl}
+              ${prog}
+            </div>
+          `;
+        }).join("");
+
+      $("#panel").innerHTML = `
+        <div class="max-w-3xl mx-auto">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <div class="text-xs tracking-wide subtle">Mi recorrido</div>
+              <h2 class="serif text-2xl mt-1">Lo que has escrito</h2>
+              <p class="text-sm mt-2 subtle">Puedes releer siempre. Editar solo el mismo día.</p>
+            </div>
+            <button class="btn focus-ring" id="btnBackHomeJ" type="button">Volver</button>
+          </div>
+
+          <div class="mt-5 space-y-3">
+            ${items || `<div class="card p-5" style="box-shadow:none;"><div class="serif">Aún no hay entradas</div><div class="text-sm subtle mt-1">Cuando escribas, aparecerá aquí.</div></div>`}
+          </div>
+        </div>
+      `;
+
+      $("#btnBackHomeJ").addEventListener("click", renderHome);
+      document.querySelectorAll("[data-open-day]").forEach(btn => {
+        btn.addEventListener("click", () => openDay(Number(btn.getAttribute("data-open-day"))));
+      });
+    }
+
+    function formatDateES(iso){
+      try{
+        const [y,m,d] = iso.split("-").map(Number);
+        const dt = new Date(y, m-1, d);
+        return dt.toLocaleDateString("es-ES", { year:"numeric", month:"long", day:"numeric" });
+      }catch(e){ return iso; }
+    }
+
+    function wireNav(){
+      $("#navHome").addEventListener("click", renderHome);
+      $("#navToday").addEventListener("click", () => openDay(maxUnlockedDay()));
+      $("#navProgress").addEventListener("click", renderProgress);
+      $("#navJourney").addEventListener("click", renderJourney);
+    }
+
+    function wire(){
+      setTheme(state.theme || "light");
+      renderHeader();
+      wireNav();
+
+      $("#btnToggleTheme").addEventListener("click", toggleTheme);
+      $("#btnReset").addEventListener("click", openResetModal);
+      $("#btnCancelReset").addEventListener("click", closeResetModal);
+      $("#btnConfirmReset").addEventListener("click", doReset);
+      $("#backdrop").addEventListener("click", closeResetModal);
+
+      incrementStreakIfNeeded();
+      renderHome();
+    }
+
+    wire();
+  </script>
+  <script>
+ <script>
+  window.addEventListener("load", () => {
+    const btn = document.createElement("button");
+    btn.textContent = "TEST · Descargar certificado";
+    btn.style.position = "fixed";
+    btn.style.right = "16px";
+    btn.style.bottom = "16px";
+    btn.style.zIndex = "999999";
+    btn.style.padding = "12px 14px";
+    btn.style.borderRadius = "14px";
+    btn.style.border = "0";
+    btn.style.cursor = "pointer";
+    btn.style.boxShadow = "0 10px 28px rgba(0,0,0,.22)";
+
+    btn.addEventListener("click", async () => {
+      try {
+        await generateCertificatePDF("PRUEBA");
+      } catch (e) {
+        alert("Error generando el certificado. Mira la consola (F12) para ver el fallo.");
+        console.error(e);
+      }
+    });
+
+    document.body.appendChild(btn);
+  });
+</script>
+
+<script>
+// ---- McB: mostrar cierre cuando está completado ----
+(function(){
+  function showFinalIfCompleted(){
+    try{
+      if(typeof isProgramCompleted !== "function") return;
+      const screen = document.getElementById("finalScreen");
+      if(!screen) return;
+      if(isCertUnlocked()){
+        screen.classList.remove("hidden");
+        screen.setAttribute("aria-hidden","false");
+      }
+    }catch(e){}
+  }
+
+  window.addEventListener("load", () => {
+    const screen = document.getElementById("finalScreen");
+    const openBtn = document.getElementById("finalOpenCertBtn");
+    const backBtn = document.getElementById("finalBackBtn");
+
+    if(openBtn){
+      openBtn.addEventListener("click", () => {
+        if(screen) screen.classList.add("hidden");
+        try{
+          if(typeof openCertModal === "function") openCertModal();
+        }catch(e){}
+      });
+    }
+    if(backBtn && screen){
+      backBtn.addEventListener("click", () => screen.classList.add("hidden"));
+    }
+
+    showFinalIfCompleted();
+    setInterval(showFinalIfCompleted, 1500);
+  });
+})();
+</script>
+
+
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("/mcB-volviendo-a-ti/sw.js", { scope: "/mcB-volviendo-a-ti/" })
+        .catch((err) => console.error("SW error:", err));
+    });
+  }
+</script>
+</body>
+</html>
+
+</template>
+
+
+<script>
+// ---- McB: mostrar cierre cuando está completado ----
+(function(){
+  function showFinalIfCompleted(){
+    try{
+      if(typeof isProgramCompleted !== "function") return;
+      const screen = document.getElementById("finalScreen");
+      if(!screen) return;
+      if(isCertUnlocked()){
+        screen.classList.remove("hidden");
+        screen.setAttribute("aria-hidden","false");
+      }
+    }catch(e){}
+  }
+
+  window.addEventListener("load", () => {
+    const screen = document.getElementById("finalScreen");
+    const openBtn = document.getElementById("finalOpenCertBtn");
+    const backBtn = document.getElementById("finalBackBtn");
+
+    if(openBtn){
+      openBtn.addEventListener("click", () => {
+        if(screen) screen.classList.add("hidden");
+        try{
+          if(typeof openCertModal === "function") openCertModal();
+        }catch(e){}
+      });
+    }
+    if(backBtn && screen){
+      backBtn.addEventListener("click", () => screen.classList.add("hidden"));
+    }
+
+    showFinalIfCompleted();
+    setInterval(showFinalIfCompleted, 1500);
+  });
+})();
+</script>
+
+
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("/mcB-volviendo-a-ti/sw.js", { scope: "/mcB-volviendo-a-ti/" })
+        .catch((err) => console.error("SW error:", err));
+    });
+  }
+</script>
+</body>
+</html>
