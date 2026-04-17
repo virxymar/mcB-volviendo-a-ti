@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Método McB · Mindfulness del Cuidado</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+
+  <style>
+    .app-access-gate{position:fixed; inset:0; background:rgba(15,15,15,.58); z-index:999999; display:none; align-items:center; justify-content:center; padding:18px;}
+    .app-access-card{background:#fff; border:1px solid rgba(0,0,0,.08); box-shadow:0 30px 80px rgba(0,0,0,.18); border-radius:18px; width:min(520px,92vw); padding:22px;}
+    .app-access-title{font-family:"Lora",serif; font-size:20px; margin:0 0 10px;}
+    .app-access-text{color:#6b6b6b; line-height:1.6; margin:0 0 16px;}
+    .app-access-note{margin-top:14px; font-size:12px; line-height:1.6; color:#6b6b6b;}
+    .app-access-label{display:block; font-size:12px; color:#6b6b6b; margin:12px 0 8px; text-transform:uppercase; letter-spacing:.08em;}
+    .app-access-row{display:flex; gap:10px; align-items:center;}
+    .app-access-input{width:100%; border:1px solid rgba(0,0,0,.12); background:#fff; border-radius:14px; padding:12px 14px; font:inherit;}
+    .app-access-toggle{white-space:nowrap;}
+    .app-access-error{min-height:20px; margin-top:10px; color:#b91c1c; font-size:13px;}
+    @media (max-width:680px){ .app-access-row{flex-direction:column; align-items:stretch;} .app-access-toggle,.app-access-submit{width:100%;} }
+  </style>
+
+  <link rel="manifest" href="/mcB-volviendo-a-ti/manifest.json">
+  <meta name="theme-color" content="#c9b3a6">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Método McB">
+  <link rel="apple-touch-icon" href="/mcB-volviendo-a-ti/icon-192.png">
+</head>
+<script>
+  (function () {
+    const box = document.getElementById("installHelpBox");
+    const text = document.getElementById("installHelpText");
+    const closeBtn = document.getElementById("closeInstallHelp");
+
+    if (!box || !text || !closeBtn) return;
+
+    const ua = navigator.userAgent || "";
+    const isIOS = /iPhone|iPad|iPod/i.test(ua);
+    const isAndroid = /Android/i.test(ua);
+    const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+    const isStandalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true;
+
+    if (isStandalone) {
+      box.style.display = "none";
+      return;
+    }
+
+    if (isIOS && isSafari) {
+      text.innerHTML = 'En Safari, pulsa <strong>Compartir</strong> y después <strong>Añadir a pantalla de inicio</strong>.';
+    } else if (isAndroid) {
+      text.innerHTML = 'En Chrome, pulsa los <strong>tres puntos</strong> y después <strong>Instalar app</strong> o <strong>Añadir a pantalla de inicio</strong>.';
+    } else {
+      text.innerHTML = 'Abre el menú de tu navegador y busca la opción <strong>Instalar app</strong> o <strong>Añadir a pantalla de inicio</strong>.';
+    }
+
+    closeBtn.addEventListener("click", () => {
+      box.style.display = "none";
+      localStorage.setItem("mcb_install_help_closed", "1");
+    });
+
+    if (localStorage.getItem("mcb_install_help_closed") === "1") {
+      box.style.display = "none";
+    }
+  })();
+</script>
+<body>
+<div id="installHelpBox" style="
+  position:fixed;
+  right:16px;
+  bottom:16px;
+  z-index:99999;
+  max-width:320px;
+  background:#ffffff;
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:18px;
+  box-shadow:0 18px 40px rgba(0,0,0,.14);
+  padding:16px 16px 14px;
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+">
+  <div style="font-family:Lora,serif;font-size:18px;margin-bottom:8px;">
+    Instalar app
+  </div>
+  <div id="installHelpText" style="font-size:14px;line-height:1.6;color:#6b6b6b;">
+    Abre el menú del navegador y elige la opción para instalar la app.
+  </div>
+  <button id="closeInstallHelp" type="button" style="
+    margin-top:12px;
+    border:1px solid rgba(0,0,0,.08);
+    background:#fff;
+    border-radius:12px;
+    padding:8px 12px;
+    cursor:pointer;
+    font-weight:600;
+  ">Cerrar</button>
+</div>
+<div id="appAccessGate" class="app-access-gate" aria-hidden="true">
+  <div class="app-access-card">
+    <div class="app-access-title">Acceso privado</div>
+    <p class="app-access-text">Este espacio está reservado para alumnas del Método McB. Introduce tu clave para continuar.</p>
+    <p class="app-access-note"><strong>Acceso personal e intransferible.</strong> Recibirás tu clave individual tras confirmar tu Bizum.</p>
+    <label class="app-access-label" for="appAccessInput">Clave de acceso</label>
+    <div class="app-access-row">
+      <input class="app-access-input" id="appAccessInput" type="password" placeholder="Introduce tu clave">
+      <button class="btn app-access-toggle" id="appAccessToggle" type="button">Mostrar</button>
+    </div>
+    <div id="appAccessError" class="app-access-error"></div>
+    <div class="app-access-row" style="justify-content:flex-end; margin-top:10px;">
+      <button class="btn primary app-access-submit" id="appAccessBtn" type="button">Entrar</button>
+    </div>
+  </div>
+</div>
+
+  <header class="header">
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="kicker">Método McB</div>
+        <div class="title">Mindfulness del Cuidado</div>
+      </div>
+      <nav class="nav">
+        <a class="btn" href="./index.html">Inicio</a>
+        <a class="btn primary" href="#curso">Continuar</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <aside class="card">
+        <h2>Tu panel</h2>
+        <div class="muted" style="margin-bottom:12px;">
+          Aquí se resume tu avance. El progreso se guarda en tu dispositivo.
+        </div>
+
+        <div class="stat" style="margin-bottom:10px;">
+          <div>
+            <div class="label">Temario</div>
+            <div class="value" id="mcbCourse">—</div>
+            <div class="sub" id="mcbCourseSub">Lecciones completadas</div>
+          </div>
+          <div class="pill" id="mcbCoursePill">En progreso</div>
+        </div>
+
+        <div class="stat" style="margin-bottom:10px;">
+          <div>
+            <div class="label">Ritual</div>
+            <div class="value" id="mcbRitual">—</div>
+            <div class="sub">Días completados</div>
+          </div>
+          <div class="pill" id="mcbRitualPill">En progreso</div>
+        </div>
+
+        <div class="stat">
+          <div>
+            <div class="label">Certificado</div>
+            <div class="value" id="mcbCert">—</div>
+            <div class="sub" id="mcbCertSub">Se desbloquea al completar</div>
+          </div>
+          <div class="pill" id="mcbCertPill">Bloqueado</div>
+        </div>
+
+        <div class="pills" style="margin-top:12px;">
+          <button class="btn primary side-tab" data-tab="curso" type="button">Temario</button>
+          <button class="btn side-tab" data-tab="ritual" type="button">Ritual</button>
+          <button class="btn side-tab" data-tab="cert" type="button">Certificado</button>
+        </div>
+
+        <div class="muted" style="margin-top:14px; font-size:12px; line-height:1.5;">
+          Consejo: si cambias de móvil o navegador, tu progreso no se traslada automáticamente.
+        </div>
+      </aside>
+
+      <section class="card">
+        <div class="tabs" role="tablist" aria-label="Secciones">
+          <button class="tab active" data-tab="curso" id="tab-curso" type="button">Temario</button>
+          <button class="tab" data-tab="ritual" id="tab-ritual" type="button">Ritual 21 días</button>
+          <button class="tab" data-tab="cert" id="tab-cert" type="button">Certificado</button>
+        </div>
+
+        <div class="panel active" id="panel-curso">
+          <div class="muted" style="margin-bottom:10px;">Tu curso se abre aquí dentro (misma web, mismo progreso).</div>
+          <div class="frame" aria-label="Curso">
+            <iframe src="./course.html" title="Curso (Temario)"></iframe>
+          </div>
+        </div>
+
+        <div class="panel" id="panel-ritual">
+          <div class="muted" style="margin-bottom:10px;">Tu ritual se gestiona dentro del curso. Aquí lo tienes abierto.</div>
+          <div class="frame" aria-label="Ritual">
+            <iframe src="./course.html#ritual" title="Ritual 21 días"></iframe>
+          </div>
+        </div>
+
+        <div class="panel" id="panel-cert">
+          <div class="muted" style="margin-bottom:10px;">El certificado se desbloquea al completar temario + ritual (21/21).</div>
+          <div class="frame" aria-label="Certificado">
+            <iframe src="./course.html#certificado" title="Certificado"></iframe>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="footer">
+      © Momentos con Blancanieves · Método McB
+    </section>
+  </main>
+
+<script>
+  // Tabs
+  const topTabs = Array.from(document.querySelectorAll(".tab"));
+  const sideTabs = Array.from(document.querySelectorAll(".side-tab"));
+  const panels = {
+    curso: document.getElementById("panel-curso"),
+    ritual: document.getElementById("panel-ritual"),
+    cert: document.getElementById("panel-cert"),
+  };
+
+  function setTab(name){
+    topTabs.forEach(t => t.classList.toggle("active", t.dataset.tab === name));
+    sideTabs.forEach(t => t.classList.toggle("primary", t.dataset.tab === name));
+    Object.entries(panels).forEach(([k, el]) => el.classList.toggle("active", k === name));
+    history.replaceState(null, "", "#" + name);
+  }
+
+  topTabs.forEach(t => t.addEventListener("click", () => setTab(t.dataset.tab)));
+  sideTabs.forEach(t => t.addEventListener("click", () => setTab(t.dataset.tab)));
+
+  const hash = (location.hash || "").replace("#","");
+  if(hash === "ritual" || hash === "cert" || hash === "curso") setTab(hash);
+
+  // Progress (exact keys used by course.html)
+  const COURSE_KEY = "mcb_mindfulness_curso_v1";
+  const RITUAL_KEY = "mcb_21_v1";
+
+  function readJSON(key){
+    try{
+      const raw = localStorage.getItem(key);
+      if(!raw) return null;
+      return JSON.parse(raw);
+    }catch(e){
+      return null;
+    }
+  }
+
+  function countCompletedLessons(courseState){
+    const cl = courseState && courseState.completedLessons;
+    if(!cl || typeof cl !== "object") return 0;
+    return Object.keys(cl).filter(k => cl[k]).length;
+  }
+
+  function countRitualDays(ritualState){
+    const days = ritualState && ritualState.days;
+    if(!Array.isArray(days)) return 0;
+    return days.filter(d => d && d.completedOn).length;
+  }
+
+  function renderProgress(){
+    const courseState = readJSON(COURSE_KEY) || {};
+    const ritualState = readJSON(RITUAL_KEY) || {};
+
+    const lessons = countCompletedLessons(courseState);
+    const ritualDays = countRitualDays(ritualState);
+    const certId = (courseState.certificateId || "").trim();
+
+    const unlocked = (lessons >= 6) && (ritualDays >= 21);
+
+    document.getElementById("mcbCourse").textContent = lessons ? String(lessons) : "—";
+    document.getElementById("mcbCourseSub").textContent = lessons ? (lessons + "/6 lecciones") : "Lecciones completadas";
+
+    document.getElementById("mcbRitual").textContent = ritualDays ? (ritualDays + "/21") : "—";
+
+    document.getElementById("mcbCert").textContent = certId ? certId : "—";
+    document.getElementById("mcbCertSub").textContent = unlocked ? "Listo para descargar" : "Se desbloquea al completar";
+
+    const coursePill = document.getElementById("mcbCoursePill");
+    const ritualPill = document.getElementById("mcbRitualPill");
+    const certPill = document.getElementById("mcbCertPill");
+
+    if(lessons >= 6){
+      coursePill.textContent = "Completado";
+      coursePill.style.background = "rgba(151,165,154,.18)";
+    }else{
+      coursePill.textContent = "En progreso";
+      coursePill.style.background = "rgba(201,179,166,.16)";
+    }
+
+    if(ritualDays >= 21){
+      ritualPill.textContent = "Completado";
+      ritualPill.style.background = "rgba(151,165,154,.18)";
+    }else{
+      ritualPill.textContent = "En progreso";
+      ritualPill.style.background = "rgba(201,179,166,.16)";
+    }
+
+    if(unlocked){
+      certPill.textContent = "Desbloqueado";
+      certPill.style.background = "rgba(151,165,154,.18)";
+    }else{
+      certPill.textContent = "Bloqueado";
+      certPill.style.background = "rgba(201,179,166,.16)";
+    }
+  }
+
+
+  const ACCESS_CODE = "McB-Alumnas-2026";
+  const ACCESS_STORAGE_KEY = "mcb_access_ok_v3";
+
+  function ensureAppAccess(){
+    const gate = document.getElementById("appAccessGate");
+    if(!gate) return;
+    if(localStorage.getItem(ACCESS_STORAGE_KEY) === "ok") return;
+    gate.style.display = "flex";
+    gate.setAttribute("aria-hidden", "false");
+  }
+
+  function grantAppAccess(){
+    const gate = document.getElementById("appAccessGate");
+    localStorage.setItem(ACCESS_STORAGE_KEY, "ok");
+    if(gate){
+      gate.style.display = "none";
+      gate.setAttribute("aria-hidden", "true");
+    }
+  }
+
+  window.addEventListener("load", () => {
+    const gate = document.getElementById("appAccessGate");
+    const input = document.getElementById("appAccessInput");
+    const btn = document.getElementById("appAccessBtn");
+    const err = document.getElementById("appAccessError");
+    const toggle = document.getElementById("appAccessToggle");
+
+    ensureAppAccess();
+
+    if(toggle && input){
+      toggle.addEventListener("click", () => {
+        const showing = input.type === "text";
+        input.type = showing ? "password" : "text";
+        toggle.textContent = showing ? "Mostrar" : "Ocultar";
+      });
+    }
+
+    if(btn && input){
+      btn.addEventListener("click", () => {
+        const value = (input.value || "").trim();
+        if(value !== ACCESS_CODE){
+          if(err) err.textContent = "La clave no es correcta.";
+          return;
+        }
+        if(err) err.textContent = "";
+        grantAppAccess();
+      });
+      input.addEventListener("keydown", (e) => { if(e.key === "Enter") btn.click(); });
+    }
+
+    renderProgress();
+    setInterval(renderProgress, 1200);
+  });
+
+</script>
+
+<script>
+  let deferredPrompt = null;
+
+  function showInstallButton() {
+    const existing = document.getElementById("installAppBtn");
+    if (existing) return;
+
+    const btn = document.createElement("button");
+    btn.id = "installAppBtn";
+    btn.type = "button";
+    btn.className = "btn primary";
+    btn.textContent = "Instalar app";
+    btn.style.position = "fixed";
+    btn.style.right = "16px";
+    btn.style.bottom = "16px";
+    btn.style.zIndex = "99999";
+    btn.style.boxShadow = "0 12px 30px rgba(0,0,0,.16)";
+
+    btn.addEventListener("click", async () => {
+      <script>
+  let deferredPrompt = null;
+
+  function ensureInstallButton() {
+    let btn = document.getElementById("installAppBtn");
+
+    if (!btn) {
+      btn = document.createElement("button");
+      btn.id = "installAppBtn";
+      btn.type = "button";
+      btn.className = "btn primary";
+      btn.textContent = "Instalar app";
+      btn.style.position = "fixed";
+      btn.style.right = "16px";
+      btn.style.bottom = "16px";
+      btn.style.zIndex = "99999";
+      btn.style.boxShadow = "0 12px 30px rgba(0,0,0,.16)";
+      btn.style.display = "none";
+
+      btn.addEventListener("click", async () => {
+        if (!deferredPrompt) {
+          alert("Si estás en iPhone: abre Safari y usa Compartir → Añadir a pantalla de inicio.");
+          return;
+        }
+
+        deferredPrompt.prompt();
+        const choiceResult = await deferredPrompt.userChoice;
+
+        if (choiceResult.outcome === "accepted") {
+          btn.remove();
+        } else {
+          btn.style.display = "block";
+        }
+      });
+
+      document.body.appendChild(btn);
+    }
+
+    return btn;
+  }
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("/mcB-volviendo-a-ti/sw.js", {
+          scope: "/mcB-volviendo-a-ti/"
+        })
+        .catch((err) => console.error("SW error:", err));
+    });
+  }
+
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    const btn = ensureInstallButton();
+    btn.style.display = "block";
+  });
+
+  window.addEventListener("appinstalled", () => {
+    const btn = document.getElementById("installAppBtn");
+    if (btn) btn.remove();
+    deferredPrompt = null;
+  });
+
+  window.addEventListener("load", () => {
+    ensureInstallButton();
+  });
+</script>
+</body>
+</html>
